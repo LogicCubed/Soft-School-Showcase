@@ -59,7 +59,7 @@ export const Footer = () => {
                 </div>
 
                 <div className="mt-12 text-center text-lg font-extrabold text-white/80">
-                &copy; {new Date().getFullYear()} Soft School. All rights reserved.
+                    &copy; {new Date().getFullYear()} Soft School. All rights reserved.
                 </div>
             </div>
         </footer>

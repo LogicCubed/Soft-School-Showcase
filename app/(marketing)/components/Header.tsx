@@ -12,12 +12,19 @@ export const Header = () => {
             Soft School
           </h1>
         </Link>
-        <Button
-            variant="primary"
-            className="cursor-pointer"
-        >
+
+        {/* Center links */}
+        <nav className="hidden md:flex gap-6">
+          <Link href="/courses" className="text-sky-400 text-lg md:text-xl font-bold hover:text-sky-500 transition-colors">Courses</Link>
+          <Link href="/for-educators" className="text-sky-400 text-lg md:text-xl font-bold hover:text-sky-500 transition-colors">For Educators</Link>
+          <Link href="/pricing" className="text-sky-400 text-lg md:text-xl font-bold hover:text-sky-500 transition-colors">Pricing</Link>
+        </nav>
+
+        <Link href="/login" passHref>
+          <Button variant="primary" className="cursor-pointer">
             Sign In
-        </Button>
+          </Button>
+        </Link>
       </div>
     </header>
   );
