@@ -1,7 +1,5 @@
-import { Button } from "components/ui/button";
 import { FeatureCard } from "./components/FeatureCard";
 import { HeroSection } from "./components/HeroSection";
-import { HelpCircle, Megaphone, MicOff } from "lucide-react";
 
 export default function LandingPage() {
     return (
@@ -14,7 +12,7 @@ export default function LandingPage() {
             />
 
             {/* Featured Section */}
-            <div className="mt-50 flex flex-col items-center gap-25">
+            <div className="mt-50 mb-50 flex flex-col items-center gap-25">
                 <FeatureCard
                     artSrc="/assets/characters/sprout/sprout.svg"
                     title="learn. act. grow."

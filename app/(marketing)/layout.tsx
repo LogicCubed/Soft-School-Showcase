@@ -7,10 +7,10 @@ type Props = {
 
 const MarketingLayout = ({ children }: Props) => {
   return (
-    <div className="min-h-screen flex flex-col bg-white">
+    <div className="min-h-screen flex flex-col bg-[#191e29]">
       <Header />
 
-      <div className="flex-1 w-full flex flex-col items-center justify-center pb-50 overflow-x-hidden">
+      <div className="flex-1 w-full flex flex-col items-center justify-center overflow-x-hidden">
         {children}
       </div>
 
