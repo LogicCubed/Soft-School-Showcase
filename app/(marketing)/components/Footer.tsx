@@ -22,26 +22,25 @@ export const Footer = () => {
                 <div className="flex-1 min-w-37.5">
                     <h3 className="font-extrabold text-2xl mb-4 text-white/80">About Us</h3>
                     <ul className="space-y-2 text-lg font-bold">
-                    <li><a href="#" className="text-white/80 hover:text-white transition-colors">Courses</a></li>
-                    <li><a href="#" className="text-white/80 hover:text-white transition-colors">Mission</a></li>
-                    <li><a href="#" className="text-white/80 hover:text-white transition-colors">Contact Us</a></li>
+                    <li><a href="courses" className="text-white/80 hover:text-white transition-colors">Courses</a></li>
+                    <li><a href="mission" className="text-white/80 hover:text-white transition-colors">Mission</a></li>
+                    <li><a href="contact-us" className="text-white/80 hover:text-white transition-colors">Contact Us</a></li>
                     </ul>
                 </div>
 
                 <div className="flex-1 min-w-37.5">
                     <h3 className="font-extrabold text-2xl mb-4 text-white/80">Help and Support</h3>
                     <ul className="space-y-2 text-lg font-bold">
-                    <li><a href="#" className="text-white/80 hover:text-white transition-colors">Soft School FAQs</a></li>
-                    <li><a href="#" className="text-white/80 hover:text-white transition-colors">Schools FAQs</a></li>
+                    <li><a href="help" className="text-white/80 hover:text-white transition-colors">Soft School FAQs</a></li>
                     </ul>
                 </div>
 
                 <div className="flex-1 min-w-37.5">
                     <h3 className="font-extrabold text-2xl mb-4 text-white/80">Privacy and Terms</h3>
                     <ul className="space-y-2 text-lg font-bold">
-                    <li><a href="#" className="text-white/80 hover:text-white transition-colors">Community Guidelines</a></li>
-                    <li><a href="#" className="text-white/80 hover:text-white transition-colors">Terms</a></li>
-                    <li><a href="#" className="text-white/80 hover:text-white transition-colors">Privacy</a></li>
+                    <li><a href="guidelines" className="text-white/80 hover:text-white transition-colors">Community Guidelines</a></li>
+                    <li><a href="terms" className="text-white/80 hover:text-white transition-colors">Terms</a></li>
+                    <li><a href="privacy" className="text-white/80 hover:text-white transition-colors">Privacy</a></li>
                     </ul>
                 </div>
 

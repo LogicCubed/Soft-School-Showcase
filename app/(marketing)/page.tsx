@@ -1,11 +1,13 @@
+import { Button } from "components/ui/button";
 import { FeatureCard } from "./components/FeatureCard";
 import { HeroSection } from "./components/HeroSection";
+import { HelpCircle, Megaphone, MicOff } from "lucide-react";
 
 export default function LandingPage() {
     return (
         <>
             <HeroSection
-                artSrc="/assets/logos/soft-school-logo.svg"
+                artSrc="/assets/characters/softy/art/hero.png"
                 title1="Real Skills."
                 title2="Real Scenarios."
                 subtitle="Master real-world soft skills through bite-sized lessons, games, puzzles, and AI powered simulations."
@@ -14,7 +16,7 @@ export default function LandingPage() {
             {/* Featured Section */}
             <div className="mt-50 flex flex-col items-center gap-25">
                 <FeatureCard
-                    artSrc="/assets/logos/soft-school-logo.svg"
+                    artSrc="/assets/characters/sprout/sprout.svg"
                     title="learn. act. grow."
                     text="Master real-world soft skills through bite-sized lessons, games, puzzles, and AI powered simulations that make practice engaging and measurable"
                 />
