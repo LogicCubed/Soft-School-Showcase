@@ -35,7 +35,7 @@ export const HeroSection = ({ artSrc, title1, title2, subtitle }: HeroSectionPro
           preserveAspectRatio="none"
         >
           <path
-            fill="#38bdf8"
+            fill="#00bcff"
             fillOpacity="1"
             d="M0,160L48,149.3C96,139,192,117,288,112C384,107,480,117,576,144C672,171,768,213,864,202.7C960,192,1056,128,1152,117.3C1248,107,1344,149,1392,170.7L1440,192L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z"
           />
