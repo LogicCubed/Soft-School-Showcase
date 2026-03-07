@@ -7,9 +7,9 @@ import {
   UserPlus,
   TrendingDown,
 } from "lucide-react";
-import KpiCard from "../components/KPICard";
-import RevenueChart from "../components/RevenueChart";
-import RecentActivity from "../components/RecentActivity";
+import KpiCard from "../../components/KPICard";
+import RevenueChart from "../../components/RevenueChart";
+import RecentActivity from "../../components/RecentActivity";
 
 export default function AdminDashboard() {
     return (

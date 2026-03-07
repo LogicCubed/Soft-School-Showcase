@@ -15,8 +15,10 @@ const buttonVariants = cva(
         danger: "bg-[#ff619e] text-primary-foreground hover:bg-[#ff3b6b]-400/90 border-[#e32b59] border-b-4 active:border-b-0",
         dangerOutline: "bg-white text-[#ff619e] hover:bg-slate-100",
         ghost: "bg-transparent text-slate-500 border-transparent border-0 hover:bg-slate-100/20",
-        sidebar: "bg-transparent text-slate-500 border-2 border-transparent hover:bg-slate-100/20 transition-none",
-        sidebarOutline: "bg-sky-500/15 text-sky-500 border-sky-300 border-2 hover:bg-sky-500/20 transition-none",
+        sidebarDark: "bg-transparent text-slate-500 border-2 border-transparent hover:bg-slate-100/20 transition-none",
+        sidebarDarkActive: "bg-sky-500/15 text-sky-500 border-sky-300 border-2 hover:bg-sky-500/20 transition-none",
+        sidebarLight: "bg-transparent text-white/90 border-2 border-transparent hover:bg-white/15 hover:text-white",
+        sidebarLightActive: "bg-white/20 text-white border-white/30 border-2 hover:bg-white/25",
       },
       size: {
         default: "h-11 px-4 py-2 has-[>svg]:px-3",
