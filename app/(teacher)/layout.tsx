@@ -6,7 +6,7 @@ type Props = {
   children: React.ReactNode;
 };
 
-const MainAdminLayout = ({ children }: Props) => {
+const MainTeacherLayout = ({ children }: Props) => {
   return (
     <div className="flex min-h-screen bg-[#F8FAFC] text-white">
       <TeacherSidebar className="hidden lg:flex w-64" />
@@ -18,4 +18,4 @@ const MainAdminLayout = ({ children }: Props) => {
   );
 };
 
-export default MainAdminLayout;
+export default MainTeacherLayout;
