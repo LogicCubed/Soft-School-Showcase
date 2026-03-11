@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
 
-import { Clipboard, Globe, Home } from "lucide-react";
+import { Calendar, Clipboard, Globe, GraduationCap, Home } from "lucide-react";
 import { SidebarItem } from "./Sidebar-Item";
 
 type Props = {
@@ -25,7 +25,9 @@ export const TeacherSidebar = ({ className }: Props ) => {
                 </Link>
                 <div className="flex flex-col gap-y-2 flex-1">
                     <SidebarItem label="Dashboard" icon={Home} href="/teacher/dashboard" />
+                    <SidebarItem label="Schedule" icon={Calendar} href="/teacher/schedule" />
                     <SidebarItem label="Classes" icon={Clipboard} href="/teacher/classes" />
+                    <SidebarItem label="Gradebook" icon={GraduationCap} href="/teacher/gradebook" />
                 </div>
                 <div className="flex flex-col mb-4">
                     <SidebarItem label="Student View" icon={Globe} href="/learn" />
