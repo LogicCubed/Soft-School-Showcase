@@ -1,21 +1,26 @@
-"use client";
-
 import { Sidebar } from "./components/Sidebar";
+
 
 type Props = {
   children: React.ReactNode;
 };
 
-const MainAdminLayout = ({ children }: Props) => {
+const MainLayout = ({ children }: Props) => {
   return (
-    <div className="flex min-h-screen bg-[#131118] text-white">
-      <Sidebar className="hidden lg:flex w-64" />
+    <div className="min-h-screen bg-[#131118] text-white">
 
-      <div className="flex-1 flex flex-col items-start justify-start overflow-x-hidden p-8 lg:ml-64">
-        {children}
-      </div>
+      {/* Sidebar on large screens */}
+      <Sidebar className="hidden lg:flex" />
+
+      {/* Main content */}
+      <main className="lg:pl-64 h-full pt-12.5 lg:pt-0">
+        <div className="max-w-264 mx-auto pt-6 h-full">
+          {children}
+        </div>
+      </main>
+
     </div>
   );
 };
 
-export default MainAdminLayout;
+export default MainLayout;

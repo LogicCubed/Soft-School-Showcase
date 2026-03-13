@@ -14,8 +14,18 @@ export function LessonButton({ className, variant, children, ...props }: LessonB
   const shadowClasses =
     variant === "locked" ? "bg-neutral-300" : "bg-sky-600"
 
+  const isLocked = variant === "locked"
+
   return (
-    <button {...props} className={cn("relative h-20 w-20", className)}>
+    <button
+      {...props}
+      disabled={isLocked}
+      className={cn(
+        "relative h-24 w-24",
+        isLocked ? "cursor-default" : "cursor-pointer",
+        className
+      )}
+    >
       <div
         className={cn(
           "absolute inset-0 rotate-45 rounded-xl translate-y-1.5",
@@ -24,7 +34,8 @@ export function LessonButton({ className, variant, children, ...props }: LessonB
       />
       <div
         className={cn(
-          "absolute inset-0 rotate-45 rounded-xl border-2 flex items-center justify-center font-bold transition-transform active:translate-y-1.5",
+          "absolute inset-0 rotate-45 rounded-xl border-2 flex items-center justify-center font-bold transition-transform",
+          !isLocked && "active:translate-y-1.5",
           topFaceClasses
         )}
       >
