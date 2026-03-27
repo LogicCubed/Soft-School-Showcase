@@ -1,8 +1,13 @@
+"use client";
+
+import { useUser, UserButton } from "@clerk/nextjs";
 import { Button } from "components/ui/button";
 import Image from "next/image";
 import Link from "next/link";
 
 export const Header = () => {
+  const { isSignedIn } = useUser();
+
   return (
     <header className="sticky top-0 z-50 h-20 w-full px-4 bg-white border-slate-200 border-b-4">
       <div className="lg:max-w-5xl mx-auto flex items-center justify-between h-full">
@@ -20,11 +25,13 @@ export const Header = () => {
           <Link href="/pricing" className="text-sky-400 text-lg md:text-xl font-bold hover:text-sky-500 transition-colors">Pricing</Link>
         </nav>
 
-        <Link href="/login" passHref>
-          <Button variant="primary" className="cursor-pointer">
-            Sign In
-          </Button>
-        </Link>
+        {isSignedIn ? (
+          <UserButton />
+        ) : (
+          <Link href="/login">
+            <Button variant="primary" className="cursor-pointer">Sign In</Button>
+          </Link>
+        )}
       </div>
     </header>
   );

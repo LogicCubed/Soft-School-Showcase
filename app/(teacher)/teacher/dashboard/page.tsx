@@ -1,7 +1,7 @@
 "use client";
 
-import HeroCard from "@/(teacher)/components/HeroCard";
-import Calendar from "@/(teacher)/components/Calendar";
+import Calendar from "../../components/Calendar";
+import HeroCard from "../../components/HeroCard";
 
 export default function TeacherDashboard() {
   return (

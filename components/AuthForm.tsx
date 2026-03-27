@@ -5,13 +5,33 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useAuth } from "@/hooks/use-auth";
+import { useRouter } from "next/navigation";
+import { useSignUp } from "@clerk/nextjs";
 
 interface AuthFormProps {
   type: "login" | "register";
 }
 
 export const AuthForm = ({ type }: AuthFormProps) => {
+  const { signUp, isLoaded: signUpLoaded } = useSignUp();
+
+  const router = useRouter();
+
+  const { login, register } = useAuth();
+
   const [remember, setRemember] = useState(false);
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const [loading, setLoading] = useState(false);
+
+  const [error, setError] = useState<string | null>(null);
+  const [code, setCode] = useState("");
+  const [step, setStep] = useState<"form" | "verify">("form");
+
+  if (!signUpLoaded || !signUp) return null;
 
   return (
     <AnimatePresence mode="wait">
@@ -49,8 +69,10 @@ export const AuthForm = ({ type }: AuthFormProps) => {
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ type: "spring" as const, stiffness: 200, damping: 18, delay: 0.2 }}
-          type="text"
-          placeholder="Username"
+          type="email"
+          placeholder="Email"
+          value={email ?? ""}
+          onChange={(e) => setEmail(e.target.value)}
           className="w-full rounded-lg border border-slate-200 bg-white text-slate-400 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-sky-400 focus:scale-105 focus:shadow-lg transition-all duration-200"
         />
         <motion.input
@@ -59,6 +81,8 @@ export const AuthForm = ({ type }: AuthFormProps) => {
           transition={{ type: "spring" as const, stiffness: 200, damping: 18, delay: 0.25 }}
           type="password"
           placeholder="Password"
+          value={password ?? ""}
+          onChange={(e) => setPassword(e.target.value)}
           className="w-full rounded-lg border border-slate-200 bg-white text-slate-400 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-sky-400 focus:scale-105 focus:shadow-lg transition-all duration-200"
         />
 
@@ -96,6 +120,9 @@ export const AuthForm = ({ type }: AuthFormProps) => {
         >
           <Button
             variant="secondary"
+            onClick={() => {
+              window.location.href = "/api/auth/google";
+            }}
             className="flex items-center justify-center w-12 h-12 bg-white rounded-lg border border-slate-200 cursor-pointer transition-all duration-150"
           >
             <Image src="/assets/logos/google.png" width={24} height={24} alt="Google" />
@@ -103,12 +130,61 @@ export const AuthForm = ({ type }: AuthFormProps) => {
         </motion.div>
 
         {/* Sign In or Register */}
+        {error && <p className="text-red-400 text-sm">{error}</p>}
+
+        {step === "verify" && (
+          <input
+            type="text"
+            placeholder="Verification code"
+            value={code}
+            onChange={(e) => setCode(e.target.value)}
+            className="w-full rounded-lg border border-slate-200 bg-white text-slate-400 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-sky-400 focus:scale-105 focus:shadow-lg transition-all duration-200"
+          />
+        )}
+
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ type: "spring" as const, stiffness: 200, damping: 18, delay: 0.4 }}
         >
-          <Button variant="primary" className="w-full py-3 mt-2 cursor-pointer">
+          <Button
+            variant="primary"
+            className="w-full py-3 mt-2 cursor-pointer"
+            disabled={loading}
+            onClick={async () => {
+              if (type === "register" && step === "verify" && !code) return;
+              if (!email || !password) return;
+
+              setLoading(true);
+              try {
+                if (type === "login") {
+                  const res = await login(email, password);
+                  if (res?.status === "complete") {
+                    router.push("/learn");
+                  } else {
+                    setError("Login failed");
+                  }
+                } else {
+                  if (step === "form") {
+                    const res = await register(email, password);
+                    if (res?.status === "missing_requirements") {
+                      setStep("verify");
+                    }
+                  } else {
+                    const res = await signUp?.attemptEmailAddressVerification({ code });
+
+                    if (res?.status === "complete") {
+                      router.push("/learn");
+                    } else {
+                      setError("Invalid code");
+                    }
+                  }
+                }
+              } finally {
+                setLoading(false);
+              }
+            }}
+          >
             {type === "login" ? "Sign In" : "Register"}
           </Button>
         </motion.div>
