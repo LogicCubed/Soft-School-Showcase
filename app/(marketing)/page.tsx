@@ -1,5 +1,6 @@
 import { FeatureCard } from "./components/FeatureCard";
 import { HeroSection } from "./components/HeroSection";
+import { ProofSection } from "./components/ProofSection";
 
 export default function LandingPage() {
     return (
@@ -35,6 +36,11 @@ export default function LandingPage() {
                     text="AI-driven simulations adapt to your level and progress, helping you practice exactly what you need, at your own pace"
                     reverse
                 />
+            </div>
+
+            {/* Proof Section */}
+            <div className="w-full mb-50">
+                <ProofSection />
             </div>
         </>
     );
