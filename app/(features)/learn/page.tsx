@@ -1,11 +1,12 @@
 "use client";
 
 import Head from "next/head";
-import { LessonButton } from "components/ui/lesson-button";
 import { StickyWrapper } from "components/Sticky-Wrapper";
 import { FeedWrapper } from "components/Feed-Wrapper";
 import { BackToTop } from "../components/BackToTop";
 import Leaderboard from "../components/Leaderboard";
+import { LessonButton } from "../../../components/ui/lesson-button";
+import { Gamepad } from "lucide-react";
 
 export default function LearnPage() {
   const lessons = [
@@ -50,7 +51,7 @@ export default function LearnPage() {
                     marginTop: index === 0 ? 60 : 24,
                   }}
                 >
-                  <LessonButton variant="primary">{lesson.id}</LessonButton>
+                  <LessonButton variant="primary" Icon={Gamepad}>{lesson.id}</LessonButton>
                 </div>
               );
             })}

@@ -3,9 +3,16 @@ import { cn } from "@/lib/utils"
 
 type LessonButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   variant: "primary" | "locked"
+  Icon?: React.ElementType
 }
 
-export function LessonButton({ className, variant, children, ...props }: LessonButtonProps) {
+export function LessonButton({
+  className,
+  variant,
+  children,
+  Icon,
+  ...props
+}: LessonButtonProps) {
   const topFaceClasses =
     variant === "locked"
       ? "bg-neutral-200 border-neutral-300 text-neutral-400"
@@ -32,6 +39,7 @@ export function LessonButton({ className, variant, children, ...props }: LessonB
           shadowClasses
         )}
       />
+
       <div
         className={cn(
           "absolute inset-0 rotate-45 rounded-xl border-2 flex items-center justify-center font-bold transition-transform",
@@ -39,7 +47,9 @@ export function LessonButton({ className, variant, children, ...props }: LessonB
           topFaceClasses
         )}
       >
-        <span className="-rotate-45">{children}</span>
+        <div className="-rotate-45 flex flex-col items-center justify-center">
+          {Icon && <Icon className="w-12 h-12 mb-1" strokeWidth={2} />}
+        </div>
       </div>
     </button>
   )
