@@ -1,4 +1,4 @@
-import { Sidebar } from "./components/Sidebar";
+import { SidebarWrapper } from "./components/sidebar/Sidebar-Wrapper";
 
 
 type Props = {
@@ -10,7 +10,7 @@ const MainLayout = ({ children }: Props) => {
     <div className="min-h-screen bg-[#131118] text-white">
 
       {/* Sidebar on large screens */}
-      <Sidebar className="hidden lg:flex" />
+      <SidebarWrapper />
 
       {/* Main content */}
       <main className="lg:pl-64 h-full pt-12.5 lg:pt-0">

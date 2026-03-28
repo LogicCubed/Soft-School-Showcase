@@ -1,12 +1,13 @@
-"use client";
-
+import { requireAdmin } from "@/lib/server/auth/admin";
 import { AdminSidebar } from "./components/Sidebar";
 
-type Props = {
+export default async function AdminLayout({
+  children,
+}: {
   children: React.ReactNode;
-};
+}) {
+  await requireAdmin();
 
-const MainAdminLayout = ({ children }: Props) => {
   return (
     <div className="flex min-h-screen bg-[#131118] text-white">
       <AdminSidebar className="hidden lg:flex w-64" />
@@ -16,6 +17,4 @@ const MainAdminLayout = ({ children }: Props) => {
       </div>
     </div>
   );
-};
-
-export default MainAdminLayout;
+}

@@ -10,15 +10,24 @@ import {
 import KpiCard from "../../components/KPICard";
 import RevenueChart from "../../components/RevenueChart";
 import RecentActivity from "../../components/RecentActivity";
+import { useUser } from "@clerk/nextjs";
 
 export default function AdminDashboard() {
+    const { user, isLoaded } = useUser();
+
+    if (!isLoaded) {
+      return null;
+    }
+
     return (
       <main className="min-h-screen">
           {/* Top section */}
           <div className="mb-12">
             <h2 className="font-bold">
               <span className="text-white text-4xl">Welcome, </span>
-              <span className="text-slate-400 text-2xl">User</span>
+              <span className="text-slate-400 text-2xl">
+                {user?.firstName}
+              </span>
             </h2>
           </div>
 

@@ -1,3 +1,5 @@
+"use client";
+
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
@@ -6,9 +8,10 @@ import { SidebarItem } from "./Sidebar-Item";
 
 type Props = {
     className?: string;
+    isAdmin?: boolean;
 };
 
-export const Sidebar = ({ className }: Props ) => {
+export const Sidebar = ({ className, isAdmin }: Props) => {
     return (
         <div className={cn(
             "flex h-full lg:w-[256px] lg:fixed left-0 top-0 px-4 bg-[#0e0d12] flex-col",
@@ -85,18 +88,20 @@ export const Sidebar = ({ className }: Props ) => {
                     />
                 </div>
                 <div className="flex flex-col mb-4">
-                    <SidebarItem
-                        label="Admin"
-                        href="/admin/dashboard"
-                        icon={
-                            <Image
-                                src="/assets/icons/shield.svg"
-                                alt="Admin"
-                                width={24}
-                                height={24}
-                            />
-                        }
-                    />
+                    {isAdmin && (
+                        <SidebarItem
+                            label="Admin"
+                            href="/admin/dashboard"
+                            icon={
+                                <Image
+                                    src="/assets/icons/shield.svg"
+                                    alt="Admin"
+                                    width={24}
+                                    height={24}
+                                />
+                            }
+                        />
+                    )}
                     <SidebarItem
                         label="Profile"
                         href="/profile"
