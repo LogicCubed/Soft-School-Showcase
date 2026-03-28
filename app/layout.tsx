@@ -23,6 +23,7 @@ export default function RootLayout({
       <html lang="en">
         <body className={`${baloo.variable} antialiased`}>
           {children}
+          <div id="clerk-captcha"/>
         </body>
       </html>
     </ClerkProvider>

@@ -3,7 +3,7 @@ import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 
 const ADMIN_IDS = new Set<string>([
-  "user_3BVw8n8fpYhScIrOAYvjV3cNpcx",
+  "user_3BYe4hntBtFM6DreRNvFopocv0k",
 ]);
 
 export async function isAdmin() {

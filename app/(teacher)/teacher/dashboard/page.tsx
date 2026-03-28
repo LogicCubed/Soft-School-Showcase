@@ -1,16 +1,21 @@
 "use client";
 
+import { useUser } from "@clerk/nextjs";
 import Calendar from "../../components/Calendar";
 import HeroCard from "../../components/HeroCard";
 
 export default function TeacherDashboard() {
+  const { user, isLoaded } = useUser();
+
+  if (!isLoaded) return null;
+
   return (
     <main className="min-h-screen p-8 relative flex flex-col lg:flex-row">
       {/* Left/main content */}
       <div className="flex-1 lg:pr-8">
         <div className="mb-12">
           <HeroCard
-            title="Welcome, Teacher!"
+            title={`Welcome, ${user?.firstName || "Teacher"}!`}
             subtext="Inspire, guide, and watch them grow!"
             imageUrl="/assets/teachers/teacher-hero.png"
           />

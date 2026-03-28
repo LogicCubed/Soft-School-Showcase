@@ -21,12 +21,14 @@ export const useAuth = () => {
     return res;
   };
 
-  const register = async (email: string, password: string) => {
+  const register = async (email: string, password: string, firstName: string, lastName: string) => {
     if (!signUpLoaded || !signUp) return;
 
     const res = await signUp.create({
         emailAddress: email,
         password,
+        firstName,
+        lastName,
     });
 
     if (res.status === "missing_requirements") {
@@ -36,7 +38,7 @@ export const useAuth = () => {
     }
 
     return res;
-    };
+  };
 
   return { login, register };
 };

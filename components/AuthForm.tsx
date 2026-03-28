@@ -24,6 +24,8 @@ export const AuthForm = ({ type }: AuthFormProps) => {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
 
   const [loading, setLoading] = useState(false);
 
@@ -65,6 +67,30 @@ export const AuthForm = ({ type }: AuthFormProps) => {
         </motion.h2>
 
         {/* Fields */}
+        {type === "register" && (
+          <div className="grid grid-cols-2 gap-4">
+            <motion.input
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ type: "spring", stiffness: 200, damping: 18, delay: 0.2 }}
+              type="text"
+              placeholder="First Name"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+              className="w-full rounded-lg border border-slate-200 bg-white text-slate-400 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-sky-400 focus:scale-105 focus:shadow-lg transition-all duration-200"
+            />
+            <motion.input
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ type: "spring", stiffness: 200, damping: 18, delay: 0.25 }}
+              type="text"
+              placeholder="Last Name"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+              className="w-full rounded-lg border border-slate-200 bg-white text-slate-400 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-sky-400 focus:scale-105 focus:shadow-lg transition-all duration-200"
+            />
+          </div>
+        )}
         <motion.input
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -158,7 +184,7 @@ export const AuthForm = ({ type }: AuthFormProps) => {
               setLoading(true);
               try {
                 if (type === "login") {
-                  const res = await login(email, password);
+                  const res = await register(email, password, firstName, lastName);
                   if (res?.status === "complete") {
                     router.push("/learn");
                   } else {
@@ -166,7 +192,7 @@ export const AuthForm = ({ type }: AuthFormProps) => {
                   }
                 } else {
                   if (step === "form") {
-                    const res = await register(email, password);
+                    const res = await register(email, password, firstName, lastName);
                     if (res?.status === "missing_requirements") {
                       setStep("verify");
                     }
