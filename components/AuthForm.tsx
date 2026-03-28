@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/hooks/use-auth";
 import { useRouter } from "next/navigation";
 import { useSignUp } from "@clerk/nextjs";
+import { Eye, EyeOff } from "lucide-react";
 
 interface AuthFormProps {
   type: "login" | "register";
@@ -20,18 +21,42 @@ export const AuthForm = ({ type }: AuthFormProps) => {
 
   const { login, register } = useAuth();
 
+  const [loading, setLoading] = useState(false);
+
   const [remember, setRemember] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
 
-  const [loading, setLoading] = useState(false);
-
   const [error, setError] = useState<string | null>(null);
   const [code, setCode] = useState("");
   const [step, setStep] = useState<"form" | "verify">("form");
+
+  const getPasswordStrength = (password: string) => {
+    let score = 0;
+
+    if (password.length >= 8) score++;
+    if (/[A-Z]/.test(password)) score++;
+    if (/[0-9]/.test(password)) score++;
+    if (/[^A-Za-z0-9]/.test(password)) score++;
+
+    return score;
+  };
+
+  const strength = getPasswordStrength(password);
+
+  const strengthLabel = ["Too weak", "Weak", "Fair", "Good", "Strong"][strength];
+
+  const strengthColor = [
+    "bg-red-400",
+    "bg-red-400",
+    "bg-yellow-400",
+    "bg-blue-400",
+    "bg-green-500",
+  ][strength];
 
   if (!signUpLoaded || !signUp) return null;
 
@@ -57,14 +82,27 @@ export const AuthForm = ({ type }: AuthFormProps) => {
         </motion.div>
 
         {/* Title */}
-        <motion.h2
+        <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ type: "spring" as const, stiffness: 180, damping: 18, delay: 0.15 }}
-          className="text-4xl text-slate-400 font-extrabold mt-16"
+          transition={{ type: "spring", stiffness: 180, damping: 18, delay: 0.15 }}
+          className="flex items-center justify-between mt-16"
         >
-          {type === "login" ? "Welcome Back!" : "Create Account"}
-        </motion.h2>
+          <h2 className="text-4xl text-slate-400 font-extrabold">
+            {type === "login" ? "Welcome Back!" : "Create Account"}
+          </h2>
+
+          {/* Google Button */}
+          <Button
+            variant="secondary"
+            onClick={() => {
+              window.location.href = "/api/auth/google";
+            }}
+            className="flex items-center justify-center w-12 h-12 bg-white rounded-lg border border-slate-200 cursor-pointer transition-all duration-150"
+          >
+            <Image src="/assets/logos/google.png" width={24} height={24} alt="Google" />
+          </Button>
+        </motion.div>
 
         {/* Fields */}
         {type === "register" && (
@@ -101,16 +139,49 @@ export const AuthForm = ({ type }: AuthFormProps) => {
           onChange={(e) => setEmail(e.target.value)}
           className="w-full rounded-lg border border-slate-200 bg-white text-slate-400 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-sky-400 focus:scale-105 focus:shadow-lg transition-all duration-200"
         />
-        <motion.input
+        <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ type: "spring" as const, stiffness: 200, damping: 18, delay: 0.25 }}
-          type="password"
-          placeholder="Password"
-          value={password ?? ""}
-          onChange={(e) => setPassword(e.target.value)}
-          className="w-full rounded-lg border border-slate-200 bg-white text-slate-400 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-sky-400 focus:scale-105 focus:shadow-lg transition-all duration-200"
-        />
+          transition={{ type: "spring", stiffness: 200, damping: 18, delay: 0.25 }}
+          className="relative"
+        >
+          <input
+            type={showPassword ? "text" : "password"}
+            placeholder="Password"
+            value={password ?? ""}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full rounded-lg border border-slate-200 bg-white text-slate-900 placeholder:text-slate-400 px-4 py-3 pr-10 focus:outline-none focus:ring-2 focus:ring-sky-400 focus:scale-105 focus:shadow-lg transition-all duration-200"
+          />
+
+          <button
+            type="button"
+            onClick={() => setShowPassword((prev) => !prev)}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
+          >
+            {showPassword ? <EyeOff size={20} strokeWidth={3} /> : <Eye size={20} strokeWidth={3} />}
+          </button>
+        </motion.div>
+
+        <motion.div
+          initial={false}
+          animate={{
+            height: password ? "auto" : 0,
+            opacity: password ? 1 : 0,
+          }}
+          transition={{ duration: 0.25 }}
+          className="overflow-hidden mt-2"
+        >
+          <div>
+            <div className="h-2 w-full bg-slate-200 rounded-full overflow-hidden">
+              <div
+                className={`h-full ${strengthColor} transition-all duration-300`}
+                style={{ width: `${(strength / 4) * 100}%` }}
+              />
+            </div>
+
+            <p className="text-xs mt-1 text-slate-400">{strengthLabel}</p>
+          </div>
+        </motion.div>
 
         {/* Remember and Forgot Password */}
         {type === "login" && (
@@ -138,23 +209,6 @@ export const AuthForm = ({ type }: AuthFormProps) => {
           </motion.div>
         )}
 
-        {/* Google Sign In */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ type: "spring" as const, stiffness: 200, damping: 18, delay: 0.35 }}
-        >
-          <Button
-            variant="secondary"
-            onClick={() => {
-              window.location.href = "/api/auth/google";
-            }}
-            className="flex items-center justify-center w-12 h-12 bg-white rounded-lg border border-slate-200 cursor-pointer transition-all duration-150"
-          >
-            <Image src="/assets/logos/google.png" width={24} height={24} alt="Google" />
-          </Button>
-        </motion.div>
-
         {/* Sign In or Register */}
         {error && <p className="text-red-400 text-sm">{error}</p>}
 
@@ -178,13 +232,20 @@ export const AuthForm = ({ type }: AuthFormProps) => {
             className="w-full py-3 mt-2 cursor-pointer"
             disabled={loading}
             onClick={async () => {
+              if (type === "register") {
+                if (!firstName || !lastName || !email || !password) {
+                  setError("All fields are Required");
+                  setLoading(false);
+                  return;
+                }
+              }
               if (type === "register" && step === "verify" && !code) return;
               if (!email || !password) return;
 
               setLoading(true);
               try {
                 if (type === "login") {
-                  const res = await register(email, password, firstName, lastName);
+                  const res = await login(email, password)
                   if (res?.status === "complete") {
                     router.push("/learn");
                   } else {
@@ -192,6 +253,12 @@ export const AuthForm = ({ type }: AuthFormProps) => {
                   }
                 } else {
                   if (step === "form") {
+                    if (getPasswordStrength(password) < 2) {
+                      setError("Password is too weak");
+                      setLoading(false);
+                      return;
+                    }
+
                     const res = await register(email, password, firstName, lastName);
                     if (res?.status === "missing_requirements") {
                       setStep("verify");

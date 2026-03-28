@@ -26,10 +26,22 @@ export const Header = () => {
         </nav>
 
         {isSignedIn ? (
-          <UserButton />
+          <div className="flex items-center gap-4">
+            <Link href="/learn">
+              <Button variant="primary" className="cursor-pointer h-10 px-5">
+                Get Started
+              </Button>
+            </Link>
+
+            <div className="flex items-center h-10">
+              <UserButton />
+            </div>
+          </div>
         ) : (
           <Link href="/login">
-            <Button variant="primary" className="cursor-pointer">Sign In</Button>
+            <Button variant="primary" className="cursor-pointer">
+              Sign In
+            </Button>
           </Link>
         )}
       </div>

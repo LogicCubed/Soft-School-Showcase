@@ -22,7 +22,7 @@ export const HeroSection = ({ artSrc, title1, title2, subtitle }: HeroSectionPro
 
         {/* Art / Lottie */}
         <div className="md:w-1/2 flex justify-center">
-          <Image src={artSrc} width={400} height={400} alt="Hero Animation" className="object-contain" />
+          <Image src={artSrc} width={400} height={400} alt="Hero Animation" className="object-contain select-none pointer-events-none" />
         </div>
       </div>
 
