@@ -10,14 +10,13 @@ import { StickyWrapper } from "@/components/Sticky-Wrapper";
 import { FeedWrapper } from "@/components/Feed-Wrapper";
 
 export default async function LearnPage() {
-  const [userProgress, lessons] = await Promise.all([
-    getUserProgress(),
-    getLessons(),
-  ]);
+  const userProgress = await getUserProgress();
 
   if (!userProgress?.active_course_id) {
     redirect("/courses");
   }
+
+  const lessons = await getLessons();
 
   return (
     <>
@@ -49,9 +48,7 @@ export default async function LearnPage() {
                     marginTop: index === 0 ? 60 : 24,
                   }}
                 >
-                  <form
-                    action={`/lesson/${lesson.id}`}
-                  >
+                  <form action={`/lesson/${lesson.id}`}>
                     <LessonButton variant="primary" Icon={Gamepad}>
                       {lesson.id}
                     </LessonButton>

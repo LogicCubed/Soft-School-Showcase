@@ -10,22 +10,9 @@ const CoursesPage = async () => {
   ]);
 
   const coursesWithProgress = courses.map((course) => {
-    const courseLessons = lessons.filter(
-      (lesson) => lesson.course_id === course.id
-    );
-
-    const completed = courseLessons.filter((lesson) =>
-      userProgress?.completedLessonIds?.includes(lesson.id)
-    ).length;
-
-    const progress =
-      courseLessons.length === 0
-        ? 0
-        : Math.round((completed / courseLessons.length) * 100);
-
     return {
       ...course,
-      progress,
+      progress: 0,
     };
   });
 
@@ -50,7 +37,7 @@ const CoursesPage = async () => {
         <section>
           <List
             courses={coursesWithProgress}
-            activeCourseId={userProgress?.activeCourseId}
+            activeCourseId={userProgress?.active_course_id}
           />
         </section>
       </main>

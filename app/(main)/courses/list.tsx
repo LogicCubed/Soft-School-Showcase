@@ -26,8 +26,6 @@ export const List = ({ courses, activeCourseId }: Props) => {
     startTransition(async () => {
       await upsertUserProgress(id);
 
-      router.refresh();
-
       router.push("/learn");
     });
   };

@@ -94,7 +94,7 @@ export const Sidebar = ({ className, isAdmin }: Props) => {
                             href="/admin/dashboard"
                             icon={
                                 <Image
-                                    src="/assets/icons/shield.svg"
+                                    src="/assets/icons/wrench.png"
                                     alt="Admin"
                                     width={24}
                                     height={24}

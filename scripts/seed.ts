@@ -9,6 +9,7 @@ const supabase = createClient(
 async function main() {
   console.log("Seeding...");
 
+  // Clean in dependency order
   await supabase.from("challenge_options").delete().neq("id", 0);
   await supabase.from("challenges").delete().neq("id", 0);
   await supabase.from("lessons").delete().neq("id", 0);
@@ -19,8 +20,7 @@ async function main() {
   const coursesToInsert = [
     {
       title: "Conflict Resolution",
-      image_src:
-        "/assets/courses/conflict-resolution/conflictresolution.svg",
+      image_src: "/assets/courses/conflict-resolution/conflictresolution.svg",
     },
     {
       title: "Problem Solving",
@@ -45,9 +45,7 @@ async function main() {
 
   if (coursesError || !courses) throw new Error("Courses insert failed");
 
-  // SEED EACH COURSE
   for (const course of courses) {
-    // UNIT
     const { data: unit, error: unitError } = await supabase
       .from("units")
       .insert({
@@ -63,7 +61,6 @@ async function main() {
 
     if (unitError || !unit) throw new Error("Unit insert failed");
 
-    // LESSON
     const { data: lesson, error: lessonError } = await supabase
       .from("lessons")
       .insert({
@@ -78,7 +75,6 @@ async function main() {
 
     if (lessonError || !lesson) throw new Error("Lesson insert failed");
 
-    // QUESTION 1
     const { data: q1, error: q1Error } = await supabase
       .from("challenges")
       .insert({
@@ -108,7 +104,6 @@ async function main() {
       },
     ]);
 
-    // QUESTION 2
     const { data: q2, error: q2Error } = await supabase
       .from("challenges")
       .insert({
@@ -128,11 +123,13 @@ async function main() {
         challenge_id: q2.id,
         text: "Option A",
         correct: false,
+        explanation: "Incorrect",
       },
       {
         challenge_id: q2.id,
         text: "Option B",
         correct: true,
+        explanation: "Correct",
       },
     ]);
   }
