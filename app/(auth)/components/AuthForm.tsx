@@ -144,17 +144,19 @@ export const AuthForm = ({ type }: AuthFormProps) => {
             </button>
           </motion.div>
 
-          <motion.div
-            initial={false}
-            animate={{
-              height: password ? "auto" : 0,
-              opacity: password ? 1 : 0,
-            }}
-            transition={{ duration: 0.25 }}
-            className="overflow-hidden mt-2"
-          >
-            <PasswordStrength password={password} />
-          </motion.div>
+          {type === "register" && (
+            <motion.div
+              initial={false}
+              animate={{
+                height: password ? "auto" : 0,
+                opacity: password ? 1 : 0,
+              }}
+              transition={{ duration: 0.25 }}
+              className="overflow-hidden mt-2"
+            >
+              <PasswordStrength password={password} />
+            </motion.div>
+          )}
 
           {/* Remember and Forgot Password */}
           {type === "login" && (

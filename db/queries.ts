@@ -1,26 +1,24 @@
 import { cache } from "react";
 import { createClient } from "@/lib/supabase";
 import { auth } from "@clerk/nextjs/server";
+import { supabaseServer } from "@/lib/server/supabase";
 
 const supabase = createClient();
 
 /* ---------------- USER PROGRESS ---------------- */
 
-export const getUserProgress = cache(async () => {
+export async function getUserProgress() {
   const { userId } = await auth();
-
   if (!userId) return null;
 
-  const { data, error } = await supabase
+  const { data } = await supabaseServer
     .from("user_progress")
     .select("*")
     .eq("user_id", userId)
     .single();
 
-  if (error) return null;
-
   return data;
-});
+}
 
 /* ---------------- COURSES ---------------- */
 
@@ -73,16 +71,13 @@ export const getCourseProgress = cache(async () => {
 
   const { data: lessons, error } = await supabase
     .from("lessons")
-    .select("*, challenges(*, challenge_options(*))")
-    .eq("unit_id", userProgress.active_course_id);
+    .select("*, challenges(*)")
+    .eq("course_id", userProgress.active_course_id);
 
   if (error || !lessons) return null;
 
-  const firstUncompletedLesson = lessons.find((lesson: any) => {
-    return lesson.challenges.some((challenge: any) => {
-      return !challenge.challenge_options?.length;
-    });
-  });
+  // TEMP: no real completion tracking yet
+  const firstUncompletedLesson = lessons[0];
 
   return {
     activeLesson: firstUncompletedLesson,
@@ -105,38 +100,19 @@ export const getLesson = cache(async (id?: number) => {
 
   const { data, error } = await supabase
     .from("lessons")
-    .select("*, challenges(*, challenge_options(*))")
+    .select("*, challenges(*)")
     .eq("id", lessonId)
     .single();
 
   if (error || !data) return null;
 
-  const normalizedChallenges = data.challenges.map((challenge: any) => {
-    return {
-      ...challenge,
-      completed: false,
-    };
-  });
-
-  return { ...data, challenges: normalizedChallenges };
+  return data;
 });
 
 /* ---------------- LESSON PERCENTAGE ---------------- */
 
 export const getLessonPercentage = cache(async () => {
-  const courseProgress = await getCourseProgress();
-
-  if (!courseProgress?.activeLessonId) return 0;
-
-  const lesson = await getLesson(courseProgress.activeLessonId);
-
-  if (!lesson) return 0;
-
-  const completed = lesson.challenges.filter(
-    (c: any) => c.completed
-  ).length;
-
-  return Math.round((completed / lesson.challenges.length) * 100);
+  return 0; // TEMP: no completion system yet
 });
 
 /* ---------------- TOP USERS ---------------- */
@@ -151,6 +127,24 @@ export const getTopTenUsers = cache(async () => {
     .select("user_id, user_name, user_image_src, points")
     .order("points", { ascending: false })
     .limit(10);
+
+  if (error) return [];
+
+  return data ?? [];
+});
+
+/* ---------------- LESSONS ---------------- */
+
+export const getLessons = cache(async () => {
+  const userProgress = await getUserProgress();
+
+  if (!userProgress?.active_course_id) return [];
+
+  const { data, error } = await supabase
+    .from("lessons")
+    .select("id, title, course_id")
+    .eq("course_id", userProgress.active_course_id)
+    .order("order", { ascending: true });
 
   if (error) return [];
 

@@ -23,13 +23,12 @@ export const List = ({ courses, activeCourseId }: Props) => {
   const onClick = (id: number) => {
     if (pending) return;
 
-    if (id === activeCourseId) {
-      router.push("/learn");
-      return;
-    }
+    startTransition(async () => {
+      await upsertUserProgress(id);
 
-    startTransition(() => {
-      upsertUserProgress(id);
+      router.refresh();
+
+      router.push("/learn");
     });
   };
 

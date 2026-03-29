@@ -1,17 +1,33 @@
-import { getCourses, getUserProgress } from "@/db/queries";
+import { getCourses, getUserProgress, getLessons } from "@/db/queries";
 import Head from "next/head";
 import { List } from "./list";
 
 const CoursesPage = async () => {
-  const coursesData = await getCourses();
-  const userProgressData = await getUserProgress();
-
-  const [courses, userProgress] = await Promise.all([
-    coursesData,
-    userProgressData,
+  const [courses, userProgress, lessons] = await Promise.all([
+    getCourses(),
+    getUserProgress(),
+    getLessons(),
   ]);
 
-  console.log("COURSES:", courses);
+  const coursesWithProgress = courses.map((course) => {
+    const courseLessons = lessons.filter(
+      (lesson) => lesson.course_id === course.id
+    );
+
+    const completed = courseLessons.filter((lesson) =>
+      userProgress?.completedLessonIds?.includes(lesson.id)
+    ).length;
+
+    const progress =
+      courseLessons.length === 0
+        ? 0
+        : Math.round((completed / courseLessons.length) * 100);
+
+    return {
+      ...course,
+      progress,
+    };
+  });
 
   return (
     <>
@@ -33,7 +49,7 @@ const CoursesPage = async () => {
 
         <section>
           <List
-            courses={courses}
+            courses={coursesWithProgress}
             activeCourseId={userProgress?.activeCourseId}
           />
         </section>
