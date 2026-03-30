@@ -1,6 +1,6 @@
 "use server";
 
-import { supabaseServer } from "@/lib/server/supabase";
+import { getSupabaseServer } from "@/lib/server/supabase";
 import { auth } from "@clerk/nextjs/server";
 
 export const upsertUserProgress = async (courseId: number) => {
@@ -8,7 +8,9 @@ export const upsertUserProgress = async (courseId: number) => {
 
   if (!userId) throw new Error("Unauthorized");
 
-  const { data, error } = await supabaseServer
+  const supabase = getSupabaseServer();
+
+  const { data, error } = await supabase
     .from("user_progress")
     .upsert(
       {

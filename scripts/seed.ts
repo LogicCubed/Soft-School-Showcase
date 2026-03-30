@@ -34,6 +34,22 @@ async function main() {
       title: "Teamwork",
       image_src: "/assets/courses/teamwork/teamwork.svg",
     },
+    {
+      title: "Empathy",
+      image_src: "/assets/courses/empathy/empathy.svg",
+    },
+    {
+      title: "Networking",
+      image_src: "/assets/courses/networking/networking.svg",
+    },
+    {
+      title: "Social Cues",
+      image_src: "/assets/courses/social-cues/socialcues.svg",
+    },
+    {
+      title: "Body Language",
+      image_src: "/assets/courses/body-language/bodylanguage.svg",
+    },
   ];
 
   const { data: courses, error: coursesError } = await supabase

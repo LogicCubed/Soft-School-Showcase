@@ -1,6 +1,6 @@
 import { cache } from "react";
 import { auth } from "@clerk/nextjs/server";
-import { supabaseServer } from "@/lib/server/supabase";
+import { getSupabaseServer } from "@/lib/server/supabase";
 
 /* ---------------- USER PROGRESS ---------------- */
 
@@ -8,7 +8,9 @@ export async function getUserProgress() {
   const { userId } = await auth();
   if (!userId) return null;
 
-  const { data } = await supabaseServer
+  const supabase = getSupabaseServer();
+
+  const { data } = await supabase
     .from("user_progress")
     .select("*")
     .eq("user_id", userId)
@@ -20,9 +22,9 @@ export async function getUserProgress() {
 /* ---------------- COURSES ---------------- */
 
 export const getCourses = cache(async () => {
-  const { data, error } = await supabaseServer
-    .from("courses")
-    .select("*");
+  const supabase = getSupabaseServer();
+
+  const { data, error } = await supabase.from("courses").select("*");
 
   if (error) throw error;
 
@@ -32,7 +34,9 @@ export const getCourses = cache(async () => {
 /* ---------------- COURSE BY ID ---------------- */
 
 export const getCourseById = cache(async (courseId: number) => {
-  const { data, error } = await supabaseServer
+  const supabase = getSupabaseServer();
+
+  const { data, error } = await supabase
     .from("courses")
     .select("*")
     .eq("id", courseId)
@@ -50,7 +54,9 @@ export const getUnits = cache(async () => {
 
   if (!userProgress?.active_course_id) return [];
 
-  const { data, error } = await supabaseServer
+  const supabase = getSupabaseServer();
+
+  const { data, error } = await supabase
     .from("units")
     .select("*")
     .eq("course_id", userProgress.active_course_id)
@@ -68,7 +74,9 @@ export const getCourseProgress = cache(async () => {
 
   if (!userProgress?.active_course_id) return null;
 
-  const { data: lessons, error } = await supabaseServer
+  const supabase = getSupabaseServer();
+
+  const { data: lessons, error } = await supabase
     .from("lessons")
     .select("id, title, order, course_id")
     .eq("course_id", userProgress.active_course_id);
@@ -90,13 +98,15 @@ export const getLesson = cache(async (id?: number) => {
 
   if (!userId) return null;
 
+  const supabase = getSupabaseServer();
+
   const courseProgress = await getCourseProgress();
 
   const lessonId = id || courseProgress?.activeLessonId;
 
   if (!lessonId) return null;
 
-  const { data, error } = await supabaseServer
+  const { data, error } = await supabase
     .from("lessons")
     .select("*, challenges(*)")
     .eq("id", lessonId)
@@ -120,7 +130,9 @@ export const getTopTenUsers = cache(async () => {
 
   if (!userId) return [];
 
-  const { data, error } = await supabaseServer
+  const supabase = getSupabaseServer();
+
+  const { data, error } = await supabase
     .from("user_progress")
     .select("user_id, user_name, user_image_src, points")
     .order("points", { ascending: false })
@@ -138,16 +150,20 @@ export const getLessons = cache(async () => {
 
   if (!userProgress?.active_course_id) return [];
 
-  const { data, error } = await supabaseServer
+  const supabase = getSupabaseServer();
+
+  const { data, error } = await supabase
     .from("units")
-    .select(`
+    .select(
+      `
       id,
       lessons (
         id,
         title,
         order
       )
-    `)
+    `
+    )
     .eq("course_id", userProgress.active_course_id)
     .order("order", { ascending: true });
 
