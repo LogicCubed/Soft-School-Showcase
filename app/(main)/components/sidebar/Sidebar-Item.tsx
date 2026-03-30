@@ -20,7 +20,7 @@ export const SidebarItem = ({ label, icon, href }: Props) => {
   return (
     <Button
       variant={active ? "sidebarDarkActive" : "sidebarDark"}
-      className="justify-start text-white font-extrabold text-1xl h-13 gap-3"
+      className="justify-start text-white font-extrabold text-[16px] h-13 gap-3"
       asChild
     >
       <Link href={href} className="flex items-center gap-3">

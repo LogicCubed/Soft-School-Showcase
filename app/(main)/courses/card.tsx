@@ -1,7 +1,6 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { Check } from "lucide-react";
 import Image from "next/image";
 
 type Props = {
@@ -20,7 +19,6 @@ export const Card = ({
   imageSrc,
   disabled,
   onClick,
-  active,
   progress = 0,
 }: Props) => {
   return (
@@ -31,15 +29,6 @@ export const Card = ({
         disabled && "pointer-events-none opacity-50"
       )}
     >
-      {/* Top right check */}
-      <div className="w-full flex items-center justify-end">
-        {active && (
-          <div className="rounded-md bg-[#ff96bf] flex items-center justify-center p-1.5">
-            <Check className="text-white stroke-4 h-4 w-4" />
-          </div>
-        )}
-      </div>
-
       {/* Image */}
       <Image
         src={imageSrc}
@@ -56,11 +45,17 @@ export const Card = ({
 
       {/* Progress bar */}
       <div className="w-full mt-3">
-        <div className="w-full h-2 bg-sky-600 rounded-full overflow-hidden">
-          <div
-            className="h-full bg-white transition-all duration-300"
-            style={{ width: `${Math.min(progress, 100)}%` }}
-          />
+        <div className="flex items-center gap-2">
+          <div className="flex-1 h-2 bg-sky-600 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-white transition-all duration-300"
+              style={{ width: `${Math.min(progress, 100)}%` }}
+            />
+          </div>
+
+          <span className="text-white text-sm font-bold whitespace-nowrap">
+            {Math.round(progress)}%
+          </span>
         </div>
       </div>
     </div>
