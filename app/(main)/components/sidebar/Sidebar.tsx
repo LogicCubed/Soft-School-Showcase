@@ -64,7 +64,7 @@ export const Sidebar = ({ className, isAdmin }: Props) => {
         />
       </div>
 
-      <div className="flex flex-col mb-4">
+      <div className="flex flex-col gap-y-2 mb-4">
         {isAdmin && (
           <SidebarItem
             label="Admin"

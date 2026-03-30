@@ -2,6 +2,7 @@
 
 import { Button } from "components/ui/button";
 import { ArrowLeft } from "lucide-react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 
 export default function AuthLayout({
@@ -33,9 +34,15 @@ export default function AuthLayout({
         </div>
 
         {/* Right Splash Art */}
-        <div className="hidden md:flex w-1/2 bg-sky-400 rounded-2xl items-center justify-center">
-          <div className="text-white text-4xl font-extrabold">
-            Soft School
+        <div className="hidden md:flex w-1/2 bg-sky-400 rounded-2xl items-center justify-center overflow-hidden">
+          <div className="relative w-4/5 h-4/5">
+            <Image
+              src="/assets/splash/auth-hero.png"
+              alt="Auth Hero"
+              fill
+              className="object-contain"
+              priority
+            />
           </div>
         </div>
 
