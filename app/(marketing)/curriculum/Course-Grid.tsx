@@ -10,7 +10,7 @@ const courses = [
         "Learn structured methods to navigate disagreements, de-escalate tension, and reach productive outcomes.",
         lessons: 12,
         level: "Intermediate",
-        image: "/assets/logos/soft-school-logo.svg",
+        image: "/assets/courses/conflict-resolution/conflictresolution.svg",
     },
     {
         slug: "teamwork",
@@ -19,7 +19,7 @@ const courses = [
         "Develop collaboration frameworks, accountability habits, and communication skills for group success.",
         lessons: 10,
         level: "Beginner",
-        image: "/assets/logos/soft-school-logo.svg",
+        image: "/assets/courses/teamwork/teamwork.svg",
     },
     {
         slug: "problem-solving",
@@ -28,7 +28,7 @@ const courses = [
         "Strengthen analytical thinking, decision-making, and structured reasoning under constraints.",
         lessons: 14,
         level: "Intermediate",
-        image: "/assets/logos/soft-school-logo.svg",
+        image: "/assets/courses/problem-solving/problemsolving.svg",
     },
     {
         slug: "speaking",
@@ -37,25 +37,43 @@ const courses = [
         "Build clarity, confidence, and persuasive delivery in academic and professional settings.",
         lessons: 8,
         level: "Beginner",
-        image: "/assets/logos/soft-school-logo.svg",
+        image: "/assets/courses/speaking/speaking.svg",
     },
     {
-        slug: "leadership",
-        title: "Leadership",
+        slug: "empathy",
+        title: "Empathy",
         description:
-        "Develop structured leadership habits, decision-making discipline, and ethical persuasion skills.",
-        lessons: 12,
-        level: "Advanced",
-        image: "/assets/logos/soft-school-logo.svg",
+        "Develop emotional awareness, perspective-taking, and stronger interpersonal understanding.",
+        lessons: 10,
+        level: "Beginner",
+        image: "/assets/courses/empathy/empathy.svg",
     },
     {
-        slug: "active-listening",
-        title: "Active Listening",
+        slug: "networking",
+        title: "Networking",
         description:
-        "Strengthen attention control, question framing, and reflective listening for clearer communication.",
+        "Learn how to build meaningful professional relationships and expand your opportunities.",
+        lessons: 10,
+        level: "Beginner",
+        image: "/assets/courses/networking/networking.svg",
+    },
+    {
+        slug: "social-cues",
+        title: "Social Cues",
+        description:
+        "Recognize and interpret subtle signals in conversations to improve social awareness.",
         lessons: 8,
         level: "Beginner",
-        image: "/assets/logos/soft-school-logo.svg",
+        image: "/assets/courses/social-cues/socialcues.svg",
+    },
+    {
+        slug: "body-language",
+        title: "Body Language",
+        description:
+        "Understand nonverbal communication to better read and project confidence.",
+        lessons: 8,
+        level: "Beginner",
+        image: "/assets/courses/body-language/bodylanguage.svg",
     },
 ];
 
@@ -66,7 +84,7 @@ export function CourseGrid() {
                 {courses.map((course) => (
                 <div
                     key={course.slug}
-                    className="border rounded-2xl shadow-sm p-8"
+                    className="bg-indigo-500 border-indigo-700 border-2 border-b-[6px] rounded-2xl p-8 text-white"
                 >
                     <div className="flex gap-6">
                         <div className="shrink-0">
@@ -79,24 +97,23 @@ export function CourseGrid() {
                             />
                         </div>
 
-                        {/* Content */}
                         <div className="flex flex-col grow">
                             <h2 className="text-2xl font-semibold mb-3">
                                 {course.title}
                             </h2>
 
-                            <p className="text-slate-500 mb-6">
+                            <p className="text-white/80 mb-6">
                                 {course.description}
                             </p>
 
-                            <div className="text-sm text-slate-600 mb-6 flex gap-6">
+                            <div className="text-sm text-white/70 mb-6 flex gap-6">
                                 <span>{course.lessons} Lessons</span>
                                 <span>{course.level}</span>
                             </div>
 
                             <div className="mt-auto">
                                 <Link href={`/courses/${course.slug}`}>
-                                    <Button className="cursor-pointer w-full">
+                                    <Button className="cursor-pointer w-full bg-white text-indigo-600 hover:bg-indigo-50">
                                         View Course
                                     </Button>
                                 </Link>

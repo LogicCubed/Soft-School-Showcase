@@ -8,6 +8,7 @@ import { Gamepad } from "lucide-react";
 import { getUserProgress, getLessons } from "@/db/queries";
 import { StickyWrapper } from "@/components/Sticky-Wrapper";
 import { FeedWrapper } from "@/components/Feed-Wrapper";
+import { StickyFooter } from "@/components/Sticky-Footer";
 
 export default async function LearnPage() {
   const userProgress = await getUserProgress();
@@ -27,6 +28,7 @@ export default async function LearnPage() {
       <div className="flex flex-row-reverse gap-12 px-6">
         <StickyWrapper>
           <Leaderboard />
+          <StickyFooter />
         </StickyWrapper>
 
         <FeedWrapper>
