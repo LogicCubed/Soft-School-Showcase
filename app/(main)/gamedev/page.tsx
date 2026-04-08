@@ -22,7 +22,7 @@ export default function GamedevPage() {
   function handleButtonClick(param?: string) {
     console.log("Button clicked!");
     const unity = unityInstanceRef.current as { SendMessage: (obj: string, method: string, param?: string) => void } | null;
-  unity?.SendMessage("HostManager", "Input", param ?? "Hello World!");
+    unity?.SendMessage("HostManager", "Input", param ?? "Hello World!");
   }
 
   useEffect(() => {
@@ -31,7 +31,7 @@ export default function GamedevPage() {
   };
     
     let mounted = true;
-    const loaderUrl = "/unity/gamedev/Build/0.1.1.6_SoftSchool_Web_Scenario.loader.js";
+    const loaderUrl = "/unity/gamedev/Build/0.1.2.4_SoftSchool_Web_Scenario.loader.js";
 
     const script = document.createElement("script");
     script.src = loaderUrl;
@@ -41,13 +41,13 @@ export default function GamedevPage() {
       if (!mounted || !canvasRef.current || !window.createUnityInstance) return;
 
       const config = {
-        dataUrl: "/unity/gamedev/Build/0.1.1.6_SoftSchool_Web_Scenario.data",
-        frameworkUrl: "/unity/gamedev/Build/0.1.1.6_SoftSchool_Web_Scenario.framework.js",
-        codeUrl: "/unity/gamedev/Build/0.1.1.6_SoftSchool_Web_Scenario.wasm",
+        dataUrl: "/unity/gamedev/Build/0.1.2.4_SoftSchool_Web_Scenario.data.br",
+        frameworkUrl: "/unity/gamedev/Build/0.1.2.4_SoftSchool_Web_Scenario.framework.js.br",
+        codeUrl: "/unity/gamedev/Build/0.1.2.4_SoftSchool_Web_Scenario.wasm.br",
         streamingAssetsUrl: "/unity/gamedev/StreamingAssets",
         companyName: "Digx7 Studios",
         productName: "SoftSchool Web Scenario",
-        productVersion: "0.1.1.6",
+        productVersion: "0.1.2.4",
       };
 
       try {
@@ -71,7 +71,9 @@ export default function GamedevPage() {
       <canvas
         ref={canvasRef}
         id="unity-canvas"
-        className="w-full max-w-5xl aspect-video bg-black rounded-lg"
+        // className="w-full max-w-5xl aspect-video bg-black rounded-lg"
+        // className="w-full max-w-5xl bg-black rounded-lg"
+        className="w-full mx-auto bg-black rounded-lg aspect-[9/16] sm:aspect-video max-w-[420px] sm:max-w-5xl"
       />
       <br />
       <h1 className="text-2xl font-bold mb-4">Website =============</h1>
