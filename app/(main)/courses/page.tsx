@@ -1,20 +1,13 @@
-import { getCourses, getUserProgress, getLessons } from "@/db/queries";
-import Head from "next/head";
+
+import { getCourses, getUserProgress } from "@/db/queries";
 import { List } from "./list";
+import Head from "next/head";
 
 const CoursesPage = async () => {
-  const [courses, userProgress, lessons] = await Promise.all([
+  const [courses, userProgress] = await Promise.all([
     getCourses(),
     getUserProgress(),
-    getLessons(),
   ]);
-
-  const coursesWithProgress = courses.map((course) => {
-    return {
-      ...course,
-      progress: 0,
-    };
-  });
 
   return (
     <>
@@ -36,8 +29,8 @@ const CoursesPage = async () => {
 
         <section>
           <List
-            courses={coursesWithProgress}
-            activeCourseId={userProgress?.active_course_id}
+            courses={courses}
+            activeCourseId={userProgress?.activeCourseId ?? undefined}
           />
         </section>
       </main>

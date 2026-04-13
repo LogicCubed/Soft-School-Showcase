@@ -1,173 +1,267 @@
 import { cache } from "react";
+
+import db from "@/db";
+import { eq } from "drizzle-orm";
 import { auth } from "@clerk/nextjs/server";
-import { getSupabaseServer } from "@/lib/server/supabase";
+import { challengeProgress, challenges, courses, lessons, units, userProgress } from "@/db/schema";
 
-/* ---------------- USER PROGRESS ---------------- */
+// Fetches the user's progress record from the database based on their userId.
+// Includes the active course associated with the user.
+// Returns null if no user is authenticated or progress is not found.
 
-export async function getUserProgress() {
-  const { userId } = await auth();
-  if (!userId) return null;
+export const getUserProgress = cache(async () => {
+    const { userId } = await auth();
 
-  const supabase = getSupabaseServer();
+    if (!userId) {
+        return null;
+    }
 
-  const { data } = await supabase
-    .from("user_progress")
-    .select("*")
-    .eq("user_id", userId)
-    .single();
+    const data = await db.query.userProgress.findFirst({
+        where: eq(userProgress.userId, userId),
+        with: {
+            activeCourse: true,
+        },
+    });
 
-  return data;
-}
-
-/* ---------------- COURSES ---------------- */
-
-export const getCourses = cache(async () => {
-  const supabase = getSupabaseServer();
-
-  const { data, error } = await supabase.from("courses").select("*");
-
-  if (error) throw error;
-
-  return data ?? [];
+    return data;
 });
 
-/* ---------------- COURSE BY ID ---------------- */
-
-export const getCourseById = cache(async (courseId: number) => {
-  const supabase = getSupabaseServer();
-
-  const { data, error } = await supabase
-    .from("courses")
-    .select("*")
-    .eq("id", courseId)
-    .single();
-
-  if (error) return null;
-
-  return data;
-});
-
-/* ---------------- UNITS ---------------- */
+// Retrieves all units for the user's active course, along with nested lessons and challenges.
+// Also includes challenge progress for the current user to determine lesson completion.
+// Adds a `completed` flag to each lesson based on whether all challenges are completed.
+// Returns an empty array if the user is not authenticated or has no active course.
 
 export const getUnits = cache(async () => {
-  const userProgress = await getUserProgress();
+    const { userId } = await auth();
+    const userProgress = await getUserProgress();
 
-  if (!userProgress?.active_course_id) return [];
+    if (!userId || !userProgress?.activeCourseId) {
+        return [];
+    }
 
-  const supabase = getSupabaseServer();
+    const data = await db.query.units.findMany({
+        orderBy: (units, { asc }) => [asc(units.order)],
+        where: eq(units.courseId, userProgress.activeCourseId),
+        with: {
+            lessons: {
+                orderBy: (lessons, { asc }) => [asc(lessons.order)],
+                with: {
+                    challenges: {
+                        orderBy: (lessons, { asc }) => [asc(challenges.order)],
+                        with: {
+                            challengeProgress: {
+                                where: eq(
+                                    challengeProgress.userId,
+                                    userId,
+                                ),
+                            },
+                        },
+                    },
+                },
+            },
+        },
+    });
 
-  const { data, error } = await supabase
-    .from("units")
-    .select("*")
-    .eq("course_id", userProgress.active_course_id)
-    .order("order");
+    const normalizedData = data.map((unit) => {
+        const lessonsWithCompletedStatus = unit.lessons.map((lesson) => {
+            if (
+                lesson.challenges.length === 0
+            ) {
+                return { ...lesson, completed: false };
+            }
+            const allCompletedChallenges = lesson.challenges.every((challenge) =>
+            {
+                return challenge.challengeProgress
+                    && challenge.challengeProgress.length > 0
+                    && challenge.challengeProgress.every((progress) => progress.completed);
+            });
 
-  if (error) return [];
+            return { ...lesson, completed: allCompletedChallenges }
+        });
 
-  return data ?? [];
+        return { ...unit, lessons: lessonsWithCompletedStatus };
+    });
+
+    return normalizedData;
 });
 
-/* ---------------- COURSE PROGRESS ---------------- */
+// Returns all courses available in the system.
+// No user authentication is required.
+
+export const getCourses = cache(async () => {
+    const data = await db.query.courses.findMany();
+
+    return data;
+});
+
+// Fetches a specific course by its ID.
+// Includes associated units and lessons, ordered by their `order` fields.
+
+export const getCourseById = cache(async (courseId: number) => {
+    const data = await db.query.courses.findFirst({
+        where: eq(courses.id, courseId),
+        with: {
+            units: {
+                orderBy: (units, { asc }) => [asc(units.order)],
+                with: {
+                    lessons: {
+                        orderBy: (lessons, { asc }) => [asc(lessons.order)],
+                    },
+                },
+            },
+        },
+    });
+
+    return data;
+});
+
+// Computes the user's course progress for their active course.
+// Retrieves all units and their lessons/challenges.
+// Finds the first uncompleted lesson (based on whether any challenge is incomplete).
+// Returns the `activeLesson` object and its ID.
+// Returns null if user is unauthenticated or has no active course.
 
 export const getCourseProgress = cache(async () => {
-  const userProgress = await getUserProgress();
+    const { userId } = await auth();
+    const userProgress = await getUserProgress();
 
-  if (!userProgress?.active_course_id) return null;
+    if (!userId || !userProgress?.activeCourseId) {
+        return null;
+    }
 
-  const supabase = getSupabaseServer();
+    const unitsInActiveCourse = await db.query.units.findMany({
+        orderBy: (units, { asc }) => [asc(units.order)],
+        where: eq(units.courseId, userProgress.activeCourseId),
+        with: {
+            lessons: {
+                orderBy: (lessons, { asc }) => [asc(lessons.order)],
+                with: {
+                    unit: true,
+                    challenges: {
+                        with: {
+                            challengeProgress: {
+                                where: eq(challengeProgress.userId, userId),
+                            },
+                        },
+                    },
+                },
+            },
+        },
+    });
 
-  const { data: lessons, error } = await supabase
-    .from("lessons")
-    .select("id, title, order, course_id")
-    .eq("course_id", userProgress.active_course_id);
-
-  if (error || !lessons) return null;
-
-  const firstUncompletedLesson = lessons[0];
-
-  return {
-    activeLesson: firstUncompletedLesson,
-    activeLessonId: firstUncompletedLesson?.id,
-  };
+    const firstUncompletedLesson = unitsInActiveCourse
+        .flatMap((unit) => unit.lessons)
+        .find((lesson) => {
+            return lesson.challenges.some((challenge) => {
+                return !challenge.challengeProgress
+                || challenge.challengeProgress.length === 0
+                || challenge.challengeProgress.some((progress) =>
+                progress.completed == false);
+            })
+        })
+    
+    return {
+        activeLesson: firstUncompletedLesson,
+        activeLessonId: firstUncompletedLesson?.id,
+    }
 });
 
-/* ---------------- LESSON ---------------- */
+// Retrieves a specific lesson by ID, or the user's active lesson if no ID is provided.
+// Includes associated challenges, their options, and progress for the current user.
+// Adds a `completed` flag to each challenge based on whether it is fully completed.
+// Returns the full lesson object with normalized challenges, or null if unauthenticated or missing data.
 
 export const getLesson = cache(async (id?: number) => {
-  const { userId } = await auth();
+    const { userId } = await auth();
 
-  if (!userId) return null;
+    if (!userId) {
+        return null;
+    }
 
-  const supabase = getSupabaseServer();
+    const courseProgress = await getCourseProgress();
 
-  const courseProgress = await getCourseProgress();
+    const lessonId = id || courseProgress?.activeLessonId;
 
-  const lessonId = id || courseProgress?.activeLessonId;
+    if (!lessonId) {
+        return null;
+    }
 
-  if (!lessonId) return null;
+    const data = await db.query.lessons.findFirst({
+        where: eq(lessons.id, lessonId),
+        with: {
+            challenges: {
+                orderBy: (challenges, { asc }) => [asc(challenges.order)],
+                with: {
+                    challengeOptions: true,
+                    challengeProgress: {
+                        where: eq(challengeProgress.userId, userId),
+                    },
+                },
+            },
+        },
+    });
 
-  const { data, error } = await supabase
-    .from("lessons")
-    .select("*, challenges(*)")
-    .eq("id", lessonId)
-    .single();
+    if (!data || !data.challenges) {
+        return null;
+    }
 
-  if (error || !data) return null;
+    const normalizedChallenges = data.challenges.map((challenge) => {
+        const completed = challenge.challengeProgress
+        && challenge.challengeProgress.length > 0
+        && challenge.challengeProgress.every((progress) => progress.completed)
 
-  return data;
+        return { ...challenge, completed };
+    });
+
+    return { ...data, challenges: normalizedChallenges }
 });
 
-/* ---------------- LESSON PERCENTAGE ---------------- */
+// Calculates the completion percentage of the active lesson based on completed challenges.
+// Returns 0 if the lesson or user progress is not found.
+// Returns a number between 0 and 100 representing the percentage.
 
 export const getLessonPercentage = cache(async () => {
-  return 0;
-});
+    const courseProgress = await getCourseProgress();
 
-/* ---------------- TOP USERS ---------------- */
+    if (!courseProgress?.activeLessonId) {
+        return 0;
+    }
+
+    const lesson = await getLesson(courseProgress.activeLessonId);
+
+    if (!lesson) {
+        return 0
+    }
+
+    const completedChallenges = lesson.challenges.filter((challenge) => challenge.completed);
+    const percentage = Math.round(
+        (completedChallenges.length / lesson.challenges.length) * 100,
+    );
+
+    return percentage;
+})
+
+// Fetches the top 10 users based on points, ordered descendingly.
+// Includes userId, userName, userImageSrc, and points.
+// Requires the current user to be authenticated.
 
 export const getTopTenUsers = cache(async () => {
-  const { userId } = await auth();
+    const { userId } = await auth();
 
-  if (!userId) return [];
+    if (!userId) {
+        return [];
+    }
+    
+    const data = await db.query.userProgress.findMany({
+        orderBy: (userProgress, { desc }) => [desc(userProgress.points)],
+        limit: 10,
+        columns: {
+            userId: true,
+            userName: true,
+            userImageSrc: true,
+            points: true,
+        },
+    });
 
-  const supabase = getSupabaseServer();
-
-  const { data, error } = await supabase
-    .from("user_progress")
-    .select("user_id, user_name, user_image_src, points")
-    .order("points", { ascending: false })
-    .limit(10);
-
-  if (error) return [];
-
-  return data ?? [];
-});
-
-/* ---------------- LESSONS ---------------- */
-
-export const getLessons = cache(async () => {
-  const userProgress = await getUserProgress();
-
-  if (!userProgress?.active_course_id) return [];
-
-  const supabase = getSupabaseServer();
-
-  const { data, error } = await supabase
-    .from("units")
-    .select(
-      `
-      id,
-      lessons (
-        id,
-        title,
-        order
-      )
-    `
-    )
-    .eq("course_id", userProgress.active_course_id)
-    .order("order", { ascending: true });
-
-  if (error || !data) return [];
-
-  return data.flatMap((unit) => unit.lessons);
+    return data;
 });

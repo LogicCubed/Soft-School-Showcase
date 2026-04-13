@@ -1,27 +1,26 @@
-import * as React from "react"
-import { cn } from "@/lib/utils"
+import * as React from "react";
+import { cn } from "@/lib/utils";
 
-type LessonButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
-  variant: "primary" | "locked"
-  Icon?: React.ElementType
-}
+type DiamondButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
+  variant: "primary" | "locked";
+  Icon?: React.ElementType;
+};
 
-export function LessonButton({
+export function DiamondButton({
   className,
   variant,
-  children,
   Icon,
   ...props
-}: LessonButtonProps) {
+}: DiamondButtonProps) {
   const topFaceClasses =
     variant === "locked"
       ? "bg-neutral-200 border-neutral-300 text-neutral-400"
-      : "bg-sky-400 border-sky-500 text-white hover:bg-sky-500"
+      : "bg-sky-400 border-sky-500 text-white hover:bg-sky-500";
 
   const shadowClasses =
-    variant === "locked" ? "bg-neutral-300" : "bg-sky-600"
+    variant === "locked" ? "bg-neutral-300" : "bg-sky-600";
 
-  const isLocked = variant === "locked"
+  const isLocked = variant === "locked";
 
   return (
     <button
@@ -52,5 +51,5 @@ export function LessonButton({
         </div>
       </div>
     </button>
-  )
+  );
 }

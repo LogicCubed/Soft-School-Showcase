@@ -1,159 +1,165 @@
 import "dotenv/config";
-import { createClient } from "@supabase/supabase-js";
+import db from "../db";
+import * as schema from "../db/schema";
 
-const supabase = createClient(
-  process.env.SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+const main = async () => {
+  try {
+    console.log("Seeding database");
 
-async function main() {
-  console.log("Seeding...");
+    await db.delete(schema.challengeOptions);
+    await db.delete(schema.challenges);
+    await db.delete(schema.lessons);
+    await db.delete(schema.units);
+    await db.delete(schema.userProgress);
+    await db.delete(schema.courses);
 
-  // Clean in dependency order
-  await supabase.from("challenge_options").delete().neq("id", 0);
-  await supabase.from("challenges").delete().neq("id", 0);
-  await supabase.from("lessons").delete().neq("id", 0);
-  await supabase.from("units").delete().neq("id", 0);
-  await supabase.from("courses").delete().neq("id", 0);
+    await db.insert(schema.courses).values([
+      { id: 1, title: "Conflict Resolution", imageSrc: "/assets/courses/conflict-resolution/conflictresolution.svg" },
+      { id: 2, title: "Problem Solving", imageSrc: "/assets/courses/problem-solving/problemsolving.svg" },
+      { id: 3, title: "Teamwork", imageSrc: "/assets/courses/teamwork/teamwork.svg" },
+      { id: 4, title: "Speaking", imageSrc: "/assets/courses/speaking/speaking.svg" },
+    ]);
 
-  // COURSES
-  const coursesToInsert = [
-    {
-      title: "Conflict Resolution",
-      image_src: "/assets/courses/conflict-resolution/conflictresolution.svg",
-    },
-    {
-      title: "Problem Solving",
-      image_src: "/assets/courses/problem-solving/problemsolving.svg",
-    },
-    {
-      title: "Speaking",
-      image_src: "/assets/courses/speaking/speaking.svg",
-    },
-    {
-      title: "Teamwork",
-      image_src: "/assets/courses/teamwork/teamwork.svg",
-    },
-    {
-      title: "Empathy",
-      image_src: "/assets/courses/empathy/empathy.svg",
-    },
-    {
-      title: "Networking",
-      image_src: "/assets/courses/networking/networking.svg",
-    },
-    {
-      title: "Social Cues",
-      image_src: "/assets/courses/social-cues/socialcues.svg",
-    },
-    {
-      title: "Body Language",
-      image_src: "/assets/courses/body-language/bodylanguage.svg",
-    },
-  ];
-
-  const { data: courses, error: coursesError } = await supabase
-    .from("courses")
-    .insert(coursesToInsert)
-    .select();
-
-  console.log("courses:", { courses, coursesError });
-
-  if (coursesError || !courses) throw new Error("Courses insert failed");
-
-  for (const course of courses) {
-    const { data: unit, error: unitError } = await supabase
-      .from("units")
-      .insert({
-        title: "Unit 1",
-        description: "Foundations",
-        course_id: course.id,
-        order: 1,
-      })
-      .select()
-      .single();
-
-    console.log("unit:", { unit, unitError });
-
-    if (unitError || !unit) throw new Error("Unit insert failed");
-
-    const { data: lesson, error: lessonError } = await supabase
-      .from("lessons")
-      .insert({
-        title: `${course.title} Lesson 1`,
-        unit_id: unit.id,
-        order: 1,
-      })
-      .select()
-      .single();
-
-    console.log("lesson:", { lesson, lessonError });
-
-    if (lessonError || !lesson) throw new Error("Lesson insert failed");
-
-    const { data: q1, error: q1Error } = await supabase
-      .from("challenges")
-      .insert({
-        lesson_id: lesson.id,
-        type: "SELECT",
-        order: 1,
-        question: "Example question 1?",
-        call_to_action: "What do you do?",
-      })
-      .select()
-      .single();
-
-    if (q1Error || !q1) throw new Error("Challenge 1 failed");
-
-    await supabase.from("challenge_options").insert([
+    await db.insert(schema.units).values([
       {
-        challenge_id: q1.id,
-        text: "Option A",
-        correct: false,
-        explanation: "Incorrect",
+        id: 1,
+        courseId: 1,
+        title: "Unit 1",
+        description: "Core skills",
+        order: 1,
       },
       {
-        challenge_id: q1.id,
-        text: "Option B",
-        correct: true,
-        explanation: "Correct",
+        id: 2,
+        courseId: 1,
+        title: "Unit 2",
+        description: "Core skills",
+        order: 2,
       },
     ]);
 
-    const { data: q2, error: q2Error } = await supabase
-      .from("challenges")
-      .insert({
-        lesson_id: lesson.id,
+    await db.insert(schema.lessons).values([
+      { id: 1, unitId: 1, order: 1, title: "Lesson 1" },
+      { id: 2, unitId: 1, order: 2, title: "Lesson 2" },
+      { id: 3, unitId: 1, order: 3, title: "Lesson 3" },
+      { id: 4, unitId: 1, order: 4, title: "Lesson 4" },
+      { id: 5, unitId: 1, order: 5, title: "Lesson 5" },
+    ]);
+
+    await db.insert(schema.challenges).values([
+      {
+        id: 1,
+        lessonId: 1,
+        type: "SELECT",
+        order: 1,
+        question: "A friend is upset. What do you do?",
+        callToAction: "Pick the best response",
+      },
+      {
+        id: 2,
+        lessonId: 1,
         type: "SELECT",
         order: 2,
-        question: "Example question 2?",
-        call_to_action: "What do you do?",
-      })
-      .select()
-      .single();
-
-    if (q2Error || !q2) throw new Error("Challenge 2 failed");
-
-    await supabase.from("challenge_options").insert([
-      {
-        challenge_id: q2.id,
-        text: "Option A",
-        correct: false,
-        explanation: "Incorrect",
+        question: "Someone is stressed with work. What helps?",
+        callToAction: "Pick the best response",
       },
       {
-        challenge_id: q2.id,
-        text: "Option B",
-        correct: true,
-        explanation: "Correct",
+        id: 3,
+        lessonId: 1,
+        type: "SELECT",
+        order: 3,
+        question: "A teammate made a mistake. What is best?",
+        callToAction: "Pick the best response",
+      },
+      {
+        id: 4,
+        lessonId: 1,
+        type: "SELECT",
+        order: 4,
+        question: "Someone feels left out. What do you do?",
+        callToAction: "Pick the best response",
+      },
+      {
+        id: 5,
+        lessonId: 1,
+        type: "SELECT",
+        order: 5,
+        question: "A friend is nervous. What helps most?",
+        callToAction: "Pick the best response",
       },
     ]);
+
+    await db.insert(schema.challengeOptions).values([
+      {
+        challengeId: 1,
+        correct: true,
+        text: "Listen and ask how they feel",
+        explanation: "Correct",
+      },
+      {
+        challengeId: 1,
+        correct: false,
+        text: "Ignore them",
+        explanation: "Wrong",
+      },
+
+      {
+        challengeId: 2,
+        correct: true,
+        text: "Help them break it down into steps",
+        explanation: "Correct",
+      },
+      {
+        challengeId: 2,
+        correct: false,
+        text: "Tell them to hurry",
+        explanation: "Wrong",
+      },
+
+      {
+        challengeId: 3,
+        correct: true,
+        text: "Help fix the issue calmly",
+        explanation: "Correct",
+      },
+      {
+        challengeId: 3,
+        correct: false,
+        text: "Blame them",
+        explanation: "Wrong",
+      },
+
+      {
+        challengeId: 4,
+        correct: true,
+        text: "Invite them to join your group",
+        explanation: "Correct",
+      },
+      {
+        challengeId: 4,
+        correct: false,
+        text: "Do nothing",
+        explanation: "Wrong",
+      },
+
+      {
+        challengeId: 5,
+        correct: true,
+        text: "Encourage them and stay supportive",
+        explanation: "Correct",
+      },
+      {
+        challengeId: 5,
+        correct: false,
+        text: "Tell them to stop worrying",
+        explanation: "Wrong",
+      },
+    ]);
+
+    console.log("Seeding finished");
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed to seed database");
   }
+};
 
-  console.log("Seed complete");
-}
-
-main().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
+main();

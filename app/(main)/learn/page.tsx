@@ -1,30 +1,38 @@
-import { redirect } from "next/navigation";
-import Head from "next/head";
+import { redirect } from "next/navigation";;
 
-import Leaderboard from "../components/Leaderboard";
-import { LessonButton } from "../../../components/ui/lesson-button";
-import { Gamepad } from "lucide-react";
-
-import { getUserProgress, getLessons } from "@/db/queries";
-import { StickyWrapper } from "@/components/Sticky-Wrapper";
 import { FeedWrapper } from "@/components/Feed-Wrapper";
+import { StickyWrapper } from "@/components/Sticky-Wrapper";
 import { StickyFooter } from "@/components/Sticky-Footer";
 
-export default async function LearnPage() {
-  const userProgress = await getUserProgress();
+import Leaderboard from "../components/Leaderboard";
 
-  if (!userProgress?.active_course_id) {
+import { BackToTop } from "../components/BackToTop";
+import { Unit } from "./Unit";
+import { getCourseProgress, getLessonPercentage, getUnits, getUserProgress } from "@/db/queries";
+
+const LearnPage = async () => {
+  const userProgressData = getUserProgress();
+  const courseProgressData = getCourseProgress();
+  const lessonPercentageData = getLessonPercentage();
+  const unitsData = getUnits();
+
+  const [userProgress, units, courseProgress, lessonPercentage] = await Promise.all([
+    userProgressData,
+    unitsData,
+    courseProgressData,
+    lessonPercentageData,
+  ]);
+
+  if (!userProgress || !userProgress.activeCourseId) {
     redirect("/courses");
   }
 
-  const lessons = await getLessons();
+  if (!courseProgress) {
+    redirect("/courses");
+  }
 
   return (
     <>
-      <Head>
-        <title>Learn</title>
-      </Head>
-
       <div className="flex flex-row-reverse gap-12 px-6">
         <StickyWrapper>
           <Leaderboard />
@@ -32,35 +40,26 @@ export default async function LearnPage() {
         </StickyWrapper>
 
         <FeedWrapper>
-          <main className="flex flex-col items-center">
-            {lessons.map((lesson, index) => {
-              const indentationPattern = [-2, -1, 0, 1, 2, 1, 0, -1];
+          <main>
+            {(units ?? []).map((unit) => (
+              <section key={unit.id} className="mb-10 relative">
+                <Unit
+                  order={unit.order}
+                  title={unit.title}
+                  description={unit.description}
+                  lessons={unit.lessons ?? []}
+                  activeLesson={courseProgress?.activeLesson}
+                  activeLessonPercentage={lessonPercentage}
+                />
+              </section>
+            ))}
 
-              const indentationLevel =
-                indentationPattern[index % indentationPattern.length];
-
-              const offset = indentationLevel * 110;
-
-              return (
-                <div
-                  key={lesson.id}
-                  className="relative"
-                  style={{
-                    transform: `translateX(${offset}px)`,
-                    marginTop: index === 0 ? 60 : 24,
-                  }}
-                >
-                  <form action={`/lesson/${lesson.id}`}>
-                    <LessonButton variant="primary" Icon={Gamepad}>
-                      {lesson.id}
-                    </LessonButton>
-                  </form>
-                </div>
-              );
-            })}
+            <BackToTop />
           </main>
         </FeedWrapper>
       </div>
     </>
   );
-}
+};
+
+export default LearnPage;
