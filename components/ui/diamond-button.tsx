@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 type DiamondButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   variant: "primary" | "locked";
   Icon?: React.ElementType;
+  current?: boolean;
 };
 
 export function DiamondButton({
@@ -12,6 +13,8 @@ export function DiamondButton({
   Icon,
   ...props
 }: DiamondButtonProps) {
+  const isLocked = variant === "locked";
+
   const topFaceClasses =
     variant === "locked"
       ? "bg-neutral-200 border-neutral-300 text-neutral-400"
@@ -19,8 +22,6 @@ export function DiamondButton({
 
   const shadowClasses =
     variant === "locked" ? "bg-neutral-300" : "bg-sky-600";
-
-  const isLocked = variant === "locked";
 
   return (
     <button
@@ -47,7 +48,7 @@ export function DiamondButton({
         )}
       >
         <div className="-rotate-45 flex flex-col items-center justify-center">
-          {Icon && <Icon className="w-12 h-12 mb-1" strokeWidth={2} />}
+          {Icon && <Icon className="w-12 h-12" strokeWidth={2} />}
         </div>
       </div>
     </button>

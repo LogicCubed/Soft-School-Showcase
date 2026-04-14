@@ -33,6 +33,8 @@ export const lessons = pgTable("lessons", {
     title: text("title").notNull(),
     unitId: integer("unit_id").references(() => units.id, { onDelete: "cascade" }).notNull(),
     order: integer("order").notNull(),
+
+    lessonAssistant: text("lesson_assistant").notNull().default("Softy"),
 })
 
 export const lessonsRelations = relations(lessons, ({ one, many }) => ({
@@ -45,16 +47,19 @@ export const lessonsRelations = relations(lessons, ({ one, many }) => ({
 
 // CREATE FUTURE CHALLENGE TYPES HERE
 export const challengesEnum = pgEnum("type", [
-    "SELECT",
+    "MULTIPLE_CHOICE",
 ]);
 
 export const challenges = pgTable("challenges", {
     id: serial("id").primaryKey(),
     lessonId: integer("lesson_id").references(() => lessons.id, { onDelete: "cascade" }).notNull(),
     type: challengesEnum("type").notNull(),
+    order: integer("order").notNull(),
+
     question: text("question").notNull(),
     callToAction: text("call_to_action").notNull(),
-    order: integer("order").notNull(),
+    hint: text("hint").notNull(),
+    questionImage: text("question_image"),
 });
 
 export const challengesRelations = relations(challenges, ({ one, many }) => ({
@@ -98,7 +103,7 @@ export const challengeProgressRelations = relations(challengeProgress, ({ one })
 export const userProgress = pgTable("user_progress", {
     userId: text("user_id").primaryKey(),
     userName: text("user_name").notNull().default("User"),
-    userImageSrc: text("user_image_src").notNull().default("/softy-assets/softyhappy.svg"),
+    userImageSrc: text("user_image_src").notNull().default("/assets/characters/softy/softy.svg"),
     activeCourseId: integer("active_course_id").references(() => courses.id, { onDelete: "cascade" }),
     points: integer("points").notNull().default(0), 
 })
