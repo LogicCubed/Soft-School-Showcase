@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 
 import { cn } from "@/lib/utils";
 import { DiamondButton } from "@/components/ui/diamond-button";
+import { useLoading } from "@/store/loadingStore";
 
 type Props = {
   id: number;
@@ -44,10 +45,14 @@ export const LessonButton = ({
 
   const Icon = isCompleted ? Check : isLast ? Crown : Star;
 
-  const href = isCompleted ? `/lesson/${id}` : `/lesson`;
+  const href = `/lesson/${id}`;
 
   const handleClick = () => {
     if (locked) return;
+
+    const setLoading = useLoading.getState().setLoading;
+
+    setLoading(true);
     router.push(href);
   };
 
