@@ -14,6 +14,8 @@ export const metadata: Metadata = {
 };
 
 import { ClerkProvider } from "@clerk/nextjs";
+import { LoadingScreen } from "@/components/LoadingScreen";
+import { LoadingReset } from "@/components/LoadingReset";
 
 export default function RootLayout({
   children,
@@ -22,6 +24,8 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en">
         <body className={`${baloo.variable} antialiased`}>
+          <LoadingScreen />
+          <LoadingReset />
           {children}
           <div id="clerk-captcha"/>
         </body>
