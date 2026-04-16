@@ -1,33 +1,47 @@
 "use client";
 
 import { useExitModal } from "@/store/use-exit-modal";
-import { Settings, X } from "lucide-react";
+import { Settings, X, Volume2 } from "lucide-react";
 import { Progress } from "./Progress";
 import { useSettingsModal } from "@/store/use-settings-modal";
+import { Button } from "@/components/ui/button";
 
 type Props = {
-    percentage: number;
+  percentage: number;
+  onSpeak: () => void;
 };
 
-export const Header = ({
-    percentage,
-}: Props) => {
-    const { open: openExitModal } = useExitModal();
-    const { open: openSettingsModal } = useSettingsModal();
-    
-    return (
-        <header className="lg:pt-12.5 pt-5 px-10 flex gap-x-7 items-center justify-between max-w-285 mx-auto w-full">
-            <X
-                onClick={openExitModal}
-                className="text-slate-500 hover:opacity-75 transition cursor-pointer"
-                strokeWidth={4}
-            />
-            <Settings
-                onClick={openSettingsModal}
-                className="text-slate-500 hover:opacity-75 transition cursor-pointer"
-                strokeWidth={2}
-            />
-            <Progress value={percentage} />
-        </header>
-    );
+export const Header = ({ percentage, onSpeak }: Props) => {
+  const { open: openExitModal } = useExitModal();
+  const { open: openSettingsModal } = useSettingsModal();
+
+  return (
+    <header className="lg:pt-12.5 pt-5 px-10 flex gap-x-7 items-center justify-between max-w-285 mx-auto w-full">
+      
+      {/* LEFT */}
+      <X
+        onClick={openExitModal}
+        className="text-slate-500 hover:opacity-75 transition cursor-pointer"
+        strokeWidth={4}
+      />
+
+      {/* CENTER */}
+      <Progress value={percentage} />
+
+      {/* RIGHT */}
+      <div className="flex items-center gap-x-4">
+
+        <Settings
+          onClick={openSettingsModal}
+          className="text-slate-500 hover:opacity-75 transition cursor-pointer"
+          strokeWidth={2}
+        />
+
+        <Button onClick={onSpeak} variant="default">
+          <Volume2 className="w-4 h-4" strokeWidth={3} />
+        </Button>
+        
+      </div>
+    </header>
+  );
 };

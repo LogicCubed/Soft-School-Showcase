@@ -10,6 +10,7 @@ import { Header } from "./components/Header";
 import { MultipleChoice } from "./components/challenges/MultipleChoice";
 import { Assistant } from "./components/Assistant";
 import { useAudioSettings } from "@/store/use-audio-settings";
+import { useTTS } from "@/hooks/use-tts";
 
 type Props = {
   initialPercentage: number;
@@ -53,8 +54,13 @@ export const Quiz = ({
 
   const [status, setStatus] = useState<"correct" | "wrong" | "none">("none");
 
+  //////////Derived//////////
+  const challenge = challenges[activeIndex];
+  const options = challenge?.challengeOptions ?? [];
+
   //////////Refs//////////
   const { volume } = useAudioSettings();
+  const { speak } = useTTS();
 
   const correctAudioRef = useRef<HTMLAudioElement | null>(null);
   const incorrectAudioRef = useRef<HTMLAudioElement | null>(null);
@@ -74,12 +80,20 @@ export const Quiz = ({
     if (incorrectAudioRef.current) incorrectAudioRef.current.volume = volume;
   }, [volume]);
 
-  //////////Derived//////////
-  const challenge = challenges[activeIndex];
-  const options = challenge?.challengeOptions ?? [];
-
   //////////Handlers//////////
   const onNext = () => setActiveIndex((c) => c + 1);
+
+  const speakCurrent = () => {
+    if (!challenge) return;
+
+    const opts = challenge.challengeOptions ?? [];
+
+    const text =
+      `${challenge.question}. ` +
+      opts.map((o, i) => `Option ${i + 1}: ${o.text}`).join(". ");
+
+    speak(text);
+  };
 
   const onSelect = (id: number) => {
     if (status !== "none") return;
@@ -141,7 +155,10 @@ export const Quiz = ({
 
   return (
     <div className="h-screen flex flex-col overflow-hidden">
-      <Header percentage={percentage} />
+      <Header
+        percentage={percentage}
+        onSpeak={speakCurrent}
+      />
 
       <div className="flex-1 grid grid-cols-[30%_40%_30%] items-stretch overflow-hidden">
         {/* LEFT */}
