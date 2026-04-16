@@ -57,6 +57,7 @@ export const Quiz = ({
   //////////Derived//////////
   const challenge = challenges[activeIndex];
   const options = challenge?.challengeOptions ?? [];
+  const explanation = challenge?.explanation ?? "";
 
   //////////Audio + TTS//////////
   const { volume } = useAudioSettings();
@@ -201,7 +202,11 @@ export const Quiz = ({
 
       <div className="flex-1 grid grid-cols-[30%_40%_30%] items-stretch overflow-hidden">
         <div className="flex items-center justify-end pr-6">
-          <Assistant id={lessonAssistant} status={status} />
+          <Assistant
+            id={lessonAssistant}
+            status={status}
+            explanation={explanation}
+          />
         </div>
 
         <div className="flex items-center justify-center">
