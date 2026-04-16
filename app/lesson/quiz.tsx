@@ -25,14 +25,16 @@ export const Quiz = ({
   initialLessonId,
   initialLessonChallenges,
 }: Props) => {
-  const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
 
-  useEffect(() => {
-    setWindowSize({ width: window.innerWidth, height: window.innerHeight });
-  }, []);
-
+  //////////Router & Transitions//////////
   const router = useRouter();
   const [pending, startTransition] = useTransition();
+
+  //////////Constants//////////
+  const lessonAssistant = "softy";
+
+  //////////State//////////
+  const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
 
   const [lessonId] = useState(initialLessonId);
 
@@ -48,14 +50,19 @@ export const Quiz = ({
   });
 
   const [selectedOption, setSelectedOption] = useState<number>();
+
   const [status, setStatus] = useState<"correct" | "wrong" | "none">("none");
 
-  // AUDIO
-
+  //////////Refs//////////
   const { volume } = useAudioSettings();
 
   const correctAudioRef = useRef<HTMLAudioElement | null>(null);
   const incorrectAudioRef = useRef<HTMLAudioElement | null>(null);
+
+  //////////Effects//////////
+  useEffect(() => {
+    setWindowSize({ width: window.innerWidth, height: window.innerHeight });
+  }, []);
 
   useEffect(() => {
     correctAudioRef.current = new Audio("/assets/sounds/lesson/correct.wav");
@@ -63,23 +70,16 @@ export const Quiz = ({
   }, []);
 
   useEffect(() => {
-    if (correctAudioRef.current) {
-      correctAudioRef.current.volume = volume;
-    }
-
-    if (incorrectAudioRef.current) {
-      incorrectAudioRef.current.volume = volume;
-    }
+    if (correctAudioRef.current) correctAudioRef.current.volume = volume;
+    if (incorrectAudioRef.current) incorrectAudioRef.current.volume = volume;
   }, [volume]);
 
+  //////////Derived//////////
   const challenge = challenges[activeIndex];
   const options = challenge?.challengeOptions ?? [];
 
-  const lessonAssistant = "softy";
-
-  const onNext = () => {
-    setActiveIndex((c) => c + 1);
-  };
+  //////////Handlers//////////
+  const onNext = () => setActiveIndex((c) => c + 1);
 
   const onSelect = (id: number) => {
     if (status !== "none") return;
@@ -121,6 +121,8 @@ export const Quiz = ({
     }
   };
 
+  //////////Render//////////
+
   if (!challenge) {
     return (
       <div className="flex flex-col min-h-screen">
@@ -144,7 +146,10 @@ export const Quiz = ({
       <div className="flex-1 grid grid-cols-[30%_40%_30%] items-stretch overflow-hidden">
         {/* LEFT */}
         <div className="flex items-center justify-end pr-6">
-          <Assistant id={lessonAssistant} />
+          <Assistant
+            id={lessonAssistant}
+            status={status}
+          />
         </div>
 
         {/* CENTER */}
