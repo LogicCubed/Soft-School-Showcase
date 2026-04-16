@@ -58,21 +58,35 @@ export const Quiz = ({
   const challenge = challenges[activeIndex];
   const options = challenge?.challengeOptions ?? [];
 
-  //////////Refs//////////
+  //////////Audio + TTS//////////
   const { volume } = useAudioSettings();
   const { speak } = useTTS();
 
   const correctAudioRef = useRef<HTMLAudioElement | null>(null);
   const incorrectAudioRef = useRef<HTMLAudioElement | null>(null);
 
+  const playSound = (audio: HTMLAudioElement | null) => {
+    if (!audio) return;
+    audio.pause();
+    audio.currentTime = 0;
+    audio.play().catch(() => {});
+  };
+
   //////////Effects//////////
+
   useEffect(() => {
     setWindowSize({ width: window.innerWidth, height: window.innerHeight });
   }, []);
 
   useEffect(() => {
-    correctAudioRef.current = new Audio("/assets/sounds/lesson/correct.wav");
-    incorrectAudioRef.current = new Audio("/assets/sounds/lesson/incorrect.wav");
+    const correct = new Audio("/assets/sounds/lesson/correct.wav");
+    const incorrect = new Audio("/assets/sounds/lesson/incorrect.wav");
+
+    correct.preload = "auto";
+    incorrect.preload = "auto";
+
+    correctAudioRef.current = correct;
+    incorrectAudioRef.current = incorrect;
   }, []);
 
   useEffect(() => {
@@ -80,9 +94,10 @@ export const Quiz = ({
     if (incorrectAudioRef.current) incorrectAudioRef.current.volume = volume;
   }, [volume]);
 
-  //////////Handlers//////////
+  //////////Navigation//////////
   const onNext = () => setActiveIndex((c) => c + 1);
 
+  //////////TTS//////////
   const speakCurrent = () => {
     if (!challenge) return;
 
@@ -95,6 +110,7 @@ export const Quiz = ({
     speak(text);
   };
 
+  //////////Handlers//////////
   const onSelect = (id: number) => {
     if (status !== "none") return;
     setSelectedOption(id);
@@ -103,6 +119,12 @@ export const Quiz = ({
   const onContinue = () => {
     if (!selectedOption) return;
 
+    const correctOption = options.find((o) => o.correct);
+    if (!correctOption) return;
+
+    const isCorrect = correctOption.id === selectedOption;
+
+    // reset flow
     if (status === "wrong") {
       setStatus("none");
       setSelectedOption(undefined);
@@ -116,27 +138,27 @@ export const Quiz = ({
       return;
     }
 
-    const correctOption = options.find((o) => o.correct);
-    if (!correctOption) return;
+    if (isCorrect) {
+      playSound(correctAudioRef.current);
 
-    if (correctOption.id === selectedOption) {
+      setStatus("correct");
+      setPercentage((p) => p + 100 / challenges.length);
+
       startTransition(() => {
-        upsertChallengeProgress(challenge.id).then(() => {
-          correctAudioRef.current?.play();
-          setStatus("correct");
-          setPercentage((p) => p + 100 / challenges.length);
-        });
+        upsertChallengeProgress(challenge.id);
       });
     } else {
+      playSound(incorrectAudioRef.current);
+
+      setStatus("wrong");
+
       startTransition(() => {
-        incorrectAudioRef.current?.play();
-        setStatus("wrong");
+        upsertChallengeProgress(challenge.id);
       });
     }
   };
 
   //////////Render//////////
-
   if (!challenge) {
     return (
       <div className="flex flex-col min-h-screen">
@@ -161,15 +183,10 @@ export const Quiz = ({
       />
 
       <div className="flex-1 grid grid-cols-[30%_40%_30%] items-stretch overflow-hidden">
-        {/* LEFT */}
         <div className="flex items-center justify-end pr-6">
-          <Assistant
-            id={lessonAssistant}
-            status={status}
-          />
+          <Assistant id={lessonAssistant} status={status} />
         </div>
 
-        {/* CENTER */}
         <div className="flex items-center justify-center">
           <div className="w-full max-w-180 flex flex-col gap-y-12">
             <MultipleChoice
@@ -183,7 +200,6 @@ export const Quiz = ({
           </div>
         </div>
 
-        {/* RIGHT */}
         <div />
       </div>
 
