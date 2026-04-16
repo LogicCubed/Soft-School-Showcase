@@ -22,7 +22,7 @@ const CoursesPage = async () => {
 
       <main className="h-full max-w-228 px-3 mx-auto">
         <header>
-          <h1 className="text-2xl font-bold text-sky-400 text-center sm:text-left mb-4">
+          <h1 className="text-4xl font-bold text-sky-400 text-center mb-4">
             Soft Skills Courses
           </h1>
         </header>

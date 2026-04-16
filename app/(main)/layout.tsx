@@ -7,7 +7,7 @@ type Props = {
 
 const MainLayout = ({ children }: Props) => {
   return (
-    <div className="min-h-screen bg-[#131118] text-white">
+    <div className="min-h-screen bg-background text-foreground">
 
       {/* Sidebar on large screens */}
       <SidebarWrapper />

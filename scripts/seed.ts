@@ -54,14 +54,12 @@ const main = async () => {
     ]);
 
     await db.insert(schema.lessons).values([
-      // Unit 1
       { id: 1, unitId: 1, order: 1, title: "Lesson 1", lessonAssistant: "softy" },
       { id: 2, unitId: 1, order: 2, title: "Lesson 2", lessonAssistant: "softy" },
       { id: 3, unitId: 1, order: 3, title: "Lesson 3", lessonAssistant: "softy" },
       { id: 4, unitId: 1, order: 4, title: "Lesson 4", lessonAssistant: "softy" },
       { id: 5, unitId: 1, order: 5, title: "Lesson 5", lessonAssistant: "softy" },
 
-      // Unit 2
       { id: 6, unitId: 2, order: 1, title: "Lesson 1", lessonAssistant: "softy" },
       { id: 7, unitId: 2, order: 2, title: "Lesson 2", lessonAssistant: "softy" },
       { id: 8, unitId: 2, order: 3, title: "Lesson 3", lessonAssistant: "softy" },
@@ -110,10 +108,21 @@ const main = async () => {
         hint: "Inclusion is the priority.",
         questionImage: null,
       },
+
+      {
+        id: 5,
+        lessonId: 2,
+        type: "MULTIPLE_CHOICE",
+        order: 1,
+        question: "A coworker disagrees with you. What is best?",
+        callToAction: "Pick the best response",
+        hint: "Focus on understanding before responding.",
+        questionImage: null,
+      },
     ]);
 
     await db.insert(schema.challengeOptions).values([
-      // Challenge 1 (4 options)
+      // Challenge 1
       {
         challengeId: 1,
         correct: true,
@@ -215,6 +224,32 @@ const main = async () => {
         correct: false,
         text: "Avoid them",
         explanation: "Reinforces isolation.",
+      },
+
+      // Challenge 5 (Lesson 2)
+      {
+        challengeId: 5,
+        correct: true,
+        text: "Listen to their perspective and respond calmly",
+        explanation: "Understanding reduces conflict.",
+      },
+      {
+        challengeId: 5,
+        correct: false,
+        text: "Immediately defend your position",
+        explanation: "Escalates disagreement.",
+      },
+      {
+        challengeId: 5,
+        correct: false,
+        text: "Ignore their opinion",
+        explanation: "Breaks collaboration.",
+      },
+      {
+        challengeId: 5,
+        correct: false,
+        text: "End the conversation",
+        explanation: "Avoids resolution.",
       },
     ]);
 

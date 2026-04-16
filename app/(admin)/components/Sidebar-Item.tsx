@@ -4,6 +4,7 @@ import { Button } from "components/ui/button";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LucideIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 type Props = {
   label: string;
@@ -19,12 +20,16 @@ export const SidebarItem = ({ label, icon: Icon, href }: Props) => {
 
   return (
     <Button
-      variant={active ? "sidebarDarkActive" : "sidebarDark"}
-      className="justify-start text-white font-extrabold text-1xl h-13 gap-3"
+      variant={active ? "navActive" : "nav"}
       asChild
+      className={cn(
+        "justify-start font-extrabold text-[16px] h-13 gap-3",
+        "text-white/80 dark:text-white",
+        active && "text-white"
+      )}
     >
-      <Link href={href} className="flex items-center">
-        <Icon className="w-16 h-16" width={32} height={32} strokeWidth={3} />
+      <Link href={href} className="flex items-center gap-3">
+        <Icon className="w-6 h-6" strokeWidth={3} />
         {label}
       </Link>
     </Button>

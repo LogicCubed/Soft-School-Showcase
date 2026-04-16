@@ -19,11 +19,11 @@ export function HowItWorks() {
 
     return (
         <section className="px-6 py-20 max-w-6xl mx-auto">
-            <h2 className="text-3xl font-bold text-center mb-16">How It Works</h2>
+            <h2 className="text-3xl font-bold text-center mb-16 text-white">How It Works</h2>
             <div className="grid md:grid-cols-3 gap-10">
                 {steps.map((step) => (
                     <div key={step.step}>
-                        <div className="text-2xl font-bold mb-4">{step.step}. {step.title}</div>
+                        <div className="text-2xl font-bold mb-4 text-white">{step.step}. {step.title}</div>
                         <p className="text-slate-400">{step.description}</p>
                     </div>
                 ))}

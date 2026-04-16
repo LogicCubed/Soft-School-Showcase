@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Baloo_2 } from "next/font/google";
+import { Baloo_2, Geist } from "next/font/google";
 import "./globals.css";
 
 const baloo = Baloo_2({
@@ -16,13 +16,17 @@ export const metadata: Metadata = {
 import { ClerkProvider } from "@clerk/nextjs";
 import { LoadingScreen } from "@/components/LoadingScreen";
 import { LoadingReset } from "@/components/LoadingReset";
+import { cn } from "@/lib/utils";
+
+const geist = Geist({subsets:['latin'],variable:'--font-sans'});
+
 
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <ClerkProvider>
-      <html lang="en">
+      <html lang="en" className={cn("font-sans", geist.variable)}>
         <body className={`${baloo.variable} antialiased`}>
           <LoadingScreen />
           <LoadingReset />

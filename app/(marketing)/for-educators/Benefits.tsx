@@ -19,7 +19,7 @@ export function Benefits() {
             <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-10">
                 {items.map((item) => (
                 <div key={item.title}>
-                    <h3 className="text-2xl font-semibold mb-3">{item.title}</h3>
+                    <h3 className="text-2xl font-semibold mb-3 text-white">{item.title}</h3>
                     <p className="text-slate-400">{item.description}</p>
                 </div>
                 ))}

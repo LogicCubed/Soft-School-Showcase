@@ -174,17 +174,18 @@ export const getCourseProgress = cache(async () => {
 export const getLesson = cache(async (id?: number) => {
     const { userId } = await auth();
 
-    if (!userId) {
-        return null;
+    if (!userId) return null;
+
+    let lessonId: number | undefined;
+
+    if (id) {
+        lessonId = id;
+    } else {
+        const courseProgress = await getCourseProgress();
+        lessonId = courseProgress?.activeLessonId;
     }
 
-    const courseProgress = await getCourseProgress();
-
-    const lessonId = id || courseProgress?.activeLessonId;
-
-    if (!lessonId) {
-        return null;
-    }
+    if (!lessonId) return null;
 
     const data = await db.query.lessons.findFirst({
         where: eq(lessons.id, lessonId),
@@ -201,19 +202,17 @@ export const getLesson = cache(async (id?: number) => {
         },
     });
 
-    if (!data || !data.challenges) {
-        return null;
-    }
+    if (!data) return null;
 
     const normalizedChallenges = data.challenges.map((challenge) => {
-        const completed = challenge.challengeProgress
-        && challenge.challengeProgress.length > 0
-        && challenge.challengeProgress.every((progress) => progress.completed)
+        const completed =
+            challenge.challengeProgress?.length > 0 &&
+            challenge.challengeProgress.every((p) => p.completed);
 
         return { ...challenge, completed };
     });
 
-    return { ...data, challenges: normalizedChallenges }
+    return { ...data, challenges: normalizedChallenges };
 });
 
 // Calculates the completion percentage of the active lesson based on completed challenges.

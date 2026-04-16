@@ -28,7 +28,7 @@ export const Header = () => {
         {isSignedIn ? (
           <div className="flex items-center gap-4">
             <Link href="/learn">
-              <Button variant="primary" className="cursor-pointer h-10 px-5">
+              <Button variant="primary" className="cursor-pointer h-10 px-5 text-white">
                 Get Started
               </Button>
             </Link>
@@ -39,7 +39,7 @@ export const Header = () => {
           </div>
         ) : (
           <Link href="/login">
-            <Button variant="primary" className="cursor-pointer">
+            <Button variant="primary" className="cursor-pointer text-white">
               Sign In
             </Button>
           </Link>

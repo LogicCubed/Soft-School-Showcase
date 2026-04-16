@@ -14,10 +14,10 @@ export const HeroSection = ({ artSrc, title1, title2, subtitle }: HeroSectionPro
       <div className="max-w-5xl mx-auto px-6 py-24 flex flex-col md:flex-row items-center gap-12">
         {/* Text */}
         <div className="md:w-1/2 text-center md:text-left">
-          <h1 className="text-5xl md:text-6xl font-extrabold mb-6 leading-tight">
+          <h1 className="text-5xl md:text-6xl text-white font-extrabold mb-6 leading-tight">
             {title1} <br /> {title2}
           </h1>
-          <p className="text-lg md:text-lg font-semibold">{subtitle}</p>
+          <p className="text-lg md:text-lg text-white font-semibold">{subtitle}</p>
         </div>
 
         {/* Art / Lottie */}

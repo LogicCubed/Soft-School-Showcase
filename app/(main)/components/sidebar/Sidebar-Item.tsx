@@ -4,6 +4,7 @@ import { Button } from "components/ui/button";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ReactNode } from "react";
+import { cn } from "@/lib/utils";
 
 type Props = {
   label: string;
@@ -19,11 +20,13 @@ export const SidebarItem = ({ label, icon, href }: Props) => {
 
   return (
     <Button
-      variant={active ? "sidebarDarkActive" : "sidebarDark"}
-      className="justify-start text-white font-extrabold text-[16px] h-13 gap-3"
+      variant={active ? "navActive" : "nav"}
       asChild
+      className={cn(
+        "justify-start font-extrabold text-[16px] h-13 gap-3"
+      )}
     >
-      <Link href={href} className="flex items-center gap-3">
+      <Link href={href} className="flex items-center gap-3 text-slate-400">
         {icon}
         {label}
       </Link>
