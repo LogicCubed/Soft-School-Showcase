@@ -59,6 +59,7 @@ export const challenges = pgTable("challenges", {
     question: text("question").notNull(),
     callToAction: text("call_to_action").notNull(),
     hint: text("hint").notNull(),
+    explanation: text("explanation").notNull(),
     questionImage: text("question_image"),
 });
 
@@ -74,9 +75,8 @@ export const challengesRelations = relations(challenges, ({ one, many }) => ({
 export const challengeOptions = pgTable("challenge_options", {
     id: serial("id").primaryKey(),
     challengeId: integer("challenge_id").references(() => challenges.id, { onDelete: "cascade" }).notNull(),
-    text: text("question").notNull(),
+    text: text("text").notNull(),
     correct: boolean("correct").notNull(),
-    explanation: text("explanation").notNull(),
 });
 
 export const challengeOptionsRelations = relations(challengeOptions, ({ one }) => ({
