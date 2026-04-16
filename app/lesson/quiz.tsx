@@ -56,6 +56,8 @@ export const Quiz = ({
 
   const [status, setStatus] = useState<"correct" | "wrong" | "none">("none");
 
+  const [showExplanation, setShowExplanation] = useState(false);
+
   //////////Derived//////////
   const challenge = challenges[activeIndex];
   const options = challenge?.challengeOptions ?? [];
@@ -114,6 +116,12 @@ export const Quiz = ({
     audio.play().catch(() => {});
   }, [challenge, volume]);
 
+  useEffect(() => {
+    setShowExplanation(false);
+    setStatus("none");
+    setSelectedOption(undefined);
+  }, [activeIndex]);
+
   //////////Navigation//////////
   const onNext = () => setActiveIndex((c) => c + 1);
 
@@ -145,12 +153,14 @@ export const Quiz = ({
     if (status === "wrong") {
       setStatus("none");
       setSelectedOption(undefined);
+      setShowExplanation(false);
       return;
     }
 
     if (status === "correct") {
       setStatus("none");
       setSelectedOption(undefined);
+      setShowExplanation(false);
       onNext();
       return;
     }
@@ -164,6 +174,8 @@ export const Quiz = ({
       startTransition(() => {
         upsertChallengeProgress(challenge.id);
       });
+
+      setShowExplanation(true);
     } else {
       playSound(incorrectAudioRef.current);
 
@@ -172,6 +184,8 @@ export const Quiz = ({
       startTransition(() => {
         upsertChallengeProgress(challenge.id);
       });
+
+      setShowExplanation(true);
     }
   };
 
@@ -202,10 +216,11 @@ export const Quiz = ({
       <div className="flex-1 grid grid-cols-[30%_40%_30%] items-stretch overflow-hidden">
         <div className="flex items-center justify-end pr-6">
           <Assistant
-            id={lessonAssistant}
-            status={status}
-            explanation={explanation}
-          />
+          id={lessonAssistant}
+          status={status}
+          show={showExplanation && status !== "none"}
+          explanation={explanation}
+        />
         </div>
 
         <div className="flex items-center justify-center">
