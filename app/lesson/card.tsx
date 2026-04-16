@@ -4,7 +4,7 @@ import { useKey } from "react-use";
 
 type Props = {
   id: number;
-  text: string;
+  text: React.ReactNode;
   shortcut: string;
   selected?: boolean;
   onClick: () => void;
@@ -39,7 +39,7 @@ export const Card = ({
       )}
     >
       <div className="flex items-center justify-between">
-        <p
+        <div
           className={cn(
             "text-neutral-600 text-sm lg:text-base",
             selected && "text-sky-500",
@@ -48,7 +48,7 @@ export const Card = ({
           )}
         >
           {text}
-        </p>
+        </div>
       </div>
     </div>
   );

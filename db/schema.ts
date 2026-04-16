@@ -48,6 +48,7 @@ export const lessonsRelations = relations(lessons, ({ one, many }) => ({
 // CREATE FUTURE CHALLENGE TYPES HERE
 export const challengesEnum = pgEnum("type", [
     "MULTIPLE_CHOICE",
+    "TRUE_FALSE",
 ]);
 
 export const challenges = pgTable("challenges", {

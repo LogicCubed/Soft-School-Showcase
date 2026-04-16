@@ -11,6 +11,8 @@ import { MultipleChoice } from "./components/challenges/MultipleChoice";
 import { Assistant } from "./components/Assistant";
 import { useAudioSettings } from "@/store/use-audio-settings";
 import { useTTS } from "@/hooks/use-tts";
+import { evaluateChallenge } from "@/lib/evaluate-challenge";
+import { TrueFalse } from "./components/challenges/TrueFalse";
 
 type Props = {
   initialPercentage: number;
@@ -122,8 +124,9 @@ export const Quiz = ({
     const opts = challenge.challengeOptions ?? [];
 
     const text =
-      `${challenge.question}. ` +
-      opts.map((o, i) => `Option ${i + 1}: ${o.text}`).join(". ");
+      challenge.question +
+      ". " +
+      opts.map((o) => o.text).join(". ");
 
     speak(text);
   };
@@ -135,14 +138,10 @@ export const Quiz = ({
   };
 
   const onContinue = () => {
-    if (!selectedOption) return;
+    if (selectedOption == null) return;
 
-    const correctOption = options.find((o) => o.correct);
-    if (!correctOption) return;
+    const isCorrect = evaluateChallenge(challenge, selectedOption, options);
 
-    const isCorrect = correctOption.id === selectedOption;
-
-    // reset flow
     if (status === "wrong") {
       setStatus("none");
       setSelectedOption(undefined);
@@ -211,14 +210,27 @@ export const Quiz = ({
 
         <div className="flex items-center justify-center">
           <div className="w-full max-w-180 flex flex-col gap-y-12">
-            <MultipleChoice
-              challenge={challenge}
-              options={options}
-              selectedOption={selectedOption}
-              onSelect={onSelect}
-              status={status}
-              disabled={pending}
-            />
+            {challenge.type === "MULTIPLE_CHOICE" && (
+              <MultipleChoice
+                challenge={challenge}
+                options={options}
+                selectedOption={selectedOption}
+                onSelect={onSelect}
+                status={status}
+                disabled={pending}
+              />
+            )}
+
+            {challenge.type === "TRUE_FALSE" && (
+              <TrueFalse
+                challenge={challenge}
+                options={options}
+                selectedOption={selectedOption}
+                onSelect={onSelect}
+                status={status}
+                disabled={pending}
+              />
+            )}
           </div>
         </div>
 

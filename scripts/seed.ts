@@ -76,16 +76,18 @@ const main = async () => {
         question: "A friend is upset. What do you do?",
         callToAction: "Pick the best response",
         hint: "Think about emotional validation first.",
+        explanation: "Emotional validation builds trust.",
         questionImage: null,
       },
       {
         id: 2,
         lessonId: 1,
-        type: "MULTIPLE_CHOICE",
+        type: "TRUE_FALSE",
         order: 2,
-        question: "Someone is stressed with work. What helps?",
-        callToAction: "Pick the best response",
-        hint: "Break problems into smaller steps.",
+        question: "You should interrupt someone when they are expressing frustration.",
+        callToAction: "Select True or False",
+        hint: "Think about active listening.",
+        explanation: "Interrupting reduces trust and prevents emotional validation.",
         questionImage: null,
       },
       {
@@ -96,19 +98,20 @@ const main = async () => {
         question: "A teammate made a mistake. What is best?",
         callToAction: "Pick the best response",
         hint: "Focus on solution, not blame.",
+        explanation: "Focusing on solutions builds accountability without conflict.",
         questionImage: null,
       },
       {
         id: 4,
         lessonId: 1,
-        type: "MULTIPLE_CHOICE",
+        type: "TRUE_FALSE",
         order: 4,
-        question: "Someone feels left out. What do you do?",
-        callToAction: "Pick the best response",
-        hint: "Inclusion is the priority.",
+        question: "Ignoring a teammate’s mistake is the best way to maintain harmony.",
+        callToAction: "Select True or False",
+        hint: "Think about long-term team performance.",
+        explanation: "Ignoring mistakes reduces growth and creates repeated issues.",
         questionImage: null,
       },
-
       {
         id: 5,
         lessonId: 2,
@@ -117,139 +120,95 @@ const main = async () => {
         question: "A coworker disagrees with you. What is best?",
         callToAction: "Pick the best response",
         hint: "Focus on understanding before responding.",
+        explanation: "Understanding before responding reduces conflict.",
         questionImage: null,
       },
     ]);
 
     await db.insert(schema.challengeOptions).values([
-      // Challenge 1
       {
         challengeId: 1,
         correct: true,
         text: "Listen and ask how they feel",
-        explanation: "Emotional validation builds trust.",
       },
       {
         challengeId: 1,
         correct: false,
         text: "Tell them to calm down",
-        explanation: "Dismisses emotions.",
       },
       {
         challengeId: 1,
         correct: false,
         text: "Ignore them",
-        explanation: "Avoids the problem.",
       },
       {
         challengeId: 1,
         correct: false,
         text: "Change the subject",
-        explanation: "Avoids emotional support.",
       },
 
-      // Challenge 2
       {
         challengeId: 2,
         correct: true,
-        text: "Help them break it into steps",
-        explanation: "Reduces overwhelm.",
+        text: "True",
       },
       {
         challengeId: 2,
         correct: false,
-        text: "Tell them to hurry up",
-        explanation: "Increases stress.",
-      },
-      {
-        challengeId: 2,
-        correct: false,
-        text: "Do it for them immediately",
-        explanation: "Removes learning opportunity.",
-      },
-      {
-        challengeId: 2,
-        correct: false,
-        text: "Ignore the situation",
-        explanation: "No support provided.",
+        text: "False",
       },
 
-      // Challenge 3
       {
         challengeId: 3,
         correct: true,
         text: "Help fix the issue calmly",
-        explanation: "Encourages problem solving.",
       },
       {
         challengeId: 3,
         correct: false,
         text: "Blame them",
-        explanation: "Creates conflict.",
       },
       {
         challengeId: 3,
         correct: false,
         text: "Publicly call them out",
-        explanation: "Damages trust.",
       },
       {
         challengeId: 3,
         correct: false,
         text: "Ignore the mistake",
-        explanation: "Misses correction opportunity.",
       },
 
-      // Challenge 4
       {
         challengeId: 4,
         correct: true,
-        text: "Invite them to join your group",
-        explanation: "Promotes inclusion.",
+        text: "True",
       },
       {
         challengeId: 4,
         correct: false,
-        text: "Do nothing",
-        explanation: "Passive exclusion.",
-      },
-      {
-        challengeId: 4,
-        correct: false,
-        text: "Tell them it's not your problem",
-        explanation: "Dismissive behavior.",
-      },
-      {
-        challengeId: 4,
-        correct: false,
-        text: "Avoid them",
-        explanation: "Reinforces isolation.",
+        text: "False",
       },
 
-      // Challenge 5 (Lesson 2)
       {
         challengeId: 5,
         correct: true,
         text: "Listen to their perspective and respond calmly",
-        explanation: "Understanding reduces conflict.",
       },
       {
         challengeId: 5,
         correct: false,
         text: "Immediately defend your position",
-        explanation: "Escalates disagreement.",
       },
       {
         challengeId: 5,
         correct: false,
         text: "Ignore their opinion",
-        explanation: "Breaks collaboration.",
       },
       {
         challengeId: 5,
         correct: false,
         text: "End the conversation",
-        explanation: "Avoids resolution.",
       },
     ]);
 
