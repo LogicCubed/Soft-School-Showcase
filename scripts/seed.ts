@@ -149,12 +149,12 @@ const main = async () => {
 
       {
         challengeId: 2,
-        correct: true,
+        correct: false,
         text: "True",
       },
       {
         challengeId: 2,
-        correct: false,
+        correct: true,
         text: "False",
       },
 
@@ -181,12 +181,12 @@ const main = async () => {
 
       {
         challengeId: 4,
-        correct: true,
+        correct: false,
         text: "True",
       },
       {
         challengeId: 4,
-        correct: false,
+        correct: true,
         text: "False",
       },
 
