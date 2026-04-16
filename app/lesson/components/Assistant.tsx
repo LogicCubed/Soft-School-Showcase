@@ -50,7 +50,7 @@ export const Assistant = ({ id, explanation, status, show }: Props) => {
           alt={assistant.name}
           width={128}
           height={128}
-          className="cursor-pointer mx-auto hover:scale-110 transition"
+          className="cursor-pointer mx-auto hover:scale-110 transition-transform animate-float"
         />
       </div>
     </div>
