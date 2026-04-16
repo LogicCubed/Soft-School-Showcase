@@ -64,6 +64,7 @@ export const Quiz = ({
 
   const correctAudioRef = useRef<HTMLAudioElement | null>(null);
   const incorrectAudioRef = useRef<HTMLAudioElement | null>(null);
+  const completionAudioRef = useRef<HTMLAudioElement | null>(null);
 
   const playSound = (audio: HTMLAudioElement | null) => {
     if (!audio) return;
@@ -81,18 +82,34 @@ export const Quiz = ({
   useEffect(() => {
     const correct = new Audio("/assets/sounds/lesson/correct.wav");
     const incorrect = new Audio("/assets/sounds/lesson/incorrect.wav");
+    const completion = new Audio("/assets/sounds/lesson/completion.wav");
 
     correct.preload = "auto";
     incorrect.preload = "auto";
+    completion.preload = "auto";
 
     correctAudioRef.current = correct;
     incorrectAudioRef.current = incorrect;
+    completionAudioRef.current = completion;
   }, []);
 
   useEffect(() => {
     if (correctAudioRef.current) correctAudioRef.current.volume = volume;
     if (incorrectAudioRef.current) incorrectAudioRef.current.volume = volume;
   }, [volume]);
+
+  useEffect(() => {
+    if (challenge) return;
+
+    const audio = completionAudioRef.current;
+    if (!audio) return;
+
+    audio.pause();
+    audio.currentTime = 0;
+    audio.volume = volume;
+
+    audio.play().catch(() => {});
+  }, [challenge, volume]);
 
   //////////Navigation//////////
   const onNext = () => setActiveIndex((c) => c + 1);
