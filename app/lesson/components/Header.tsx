@@ -1,7 +1,7 @@
 "use client";
 
 import { useExitModal } from "@/store/use-exit-modal";
-import { Settings, X, Volume2 } from "lucide-react";
+import { Settings, X, Volume2, VolumeX } from "lucide-react";
 import { Progress } from "./Progress";
 import { useSettingsModal } from "@/store/use-settings-modal";
 import { Button } from "@/components/ui/button";
@@ -10,9 +10,17 @@ type Props = {
   percentage: number;
   streak: number;
   onSpeak: () => void;
+  isSpeaking: boolean;
+  onStop: () => void;
 };
 
-export const Header = ({ percentage, streak, onSpeak }: Props) => {
+export const Header = ({
+  percentage,
+  streak,
+  onSpeak,
+  isSpeaking,
+  onStop,
+}: Props) => {
   const { open: openExitModal } = useExitModal();
   const { open: openSettingsModal } = useSettingsModal();
 
@@ -40,8 +48,16 @@ export const Header = ({ percentage, streak, onSpeak }: Props) => {
           strokeWidth={2}
         />
 
-        <Button onClick={onSpeak} variant="default">
-          <Volume2 className="w-4 h-4" strokeWidth={3} />
+        <Button
+          onClick={isSpeaking ? onStop : onSpeak}
+          variant={isSpeaking ? "danger" : "default"}
+          className={isSpeaking ? "animate-pulse" : ""}
+        >
+          {isSpeaking ? (
+            <VolumeX className="w-4 h-4" strokeWidth={3} />
+          ) : (
+            <Volume2 className="w-4 h-4" strokeWidth={3} />
+          )}
         </Button>
         
       </div>

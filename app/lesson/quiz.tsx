@@ -66,7 +66,7 @@ export const Quiz = ({
   //////////Effects//////////
 
   const { playCorrect, playIncorrect, playCompletion } = useQuizAudio();
-  const { speak } = useTTS();
+  const { speak, stop, isSpeaking } = useTTS();
 
   useEffect(() => {
     setWindowSize({ width: window.innerWidth, height: window.innerHeight });
@@ -176,6 +176,8 @@ export const Quiz = ({
         percentage={percentage}
         streak={streak}
         onSpeak={() => speakCurrent(speak)}
+        onStop={stop}
+        isSpeaking={isSpeaking}
       />
 
       <div className="flex-1 grid grid-cols-[30%_40%_30%] items-stretch overflow-hidden">

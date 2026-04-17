@@ -21,7 +21,7 @@ const buttonVariants = cva(
           "bg-[#ff96bf] text-primary-foreground hover:bg-[#ff96bf]/90 border-[#e376a0] border-b-4 active:border-b-0 cursor-pointer",
 
         danger:
-          "bg-[#ff619e] text-primary-foreground hover:bg-[#ff3b6b]/90 border-[#e32b59] border-b-4 active:border-b-0 cursor-pointer",
+          "bg-[#ff619e] text-primary-foreground hover:bg-[#ff3b6b]/90 border-[#e32b59] border-2 border-b-4 active:border-b-2 cursor-pointer",
 
         dangerOutline:
           "bg-white text-[#ff619e] hover:bg-slate-100 cursor-pointer",
