@@ -2,17 +2,17 @@
 
 import { challengeOptions, challenges } from "@/db/schema";
 import { useEffect, useRef, useState, useTransition } from "react";
-import { upsertChallengeProgress } from "@/actions/challenge-progress";
 import { ResultCard } from "./result-card";
 import { useRouter } from "next/navigation";
 import { Footer } from "./components/Footer";
 import { Header } from "./components/Header";
 import { MultipleChoice } from "./components/challenges/MultipleChoice";
 import { Assistant } from "./components/Assistant";
-import { useAudioSettings } from "@/store/use-audio-settings";
-import { useTTS } from "@/hooks/use-tts";
-import { evaluateChallenge } from "@/lib/evaluate-challenge";
+import { useQuizHandlers } from "@/hooks/use-quiz-handlers";
 import { TrueFalse } from "./components/challenges/TrueFalse";
+import { upsertChallengeProgress } from "@/actions/challenge-progress";
+import { useQuizAudio } from "@/hooks/use-quiz-audio";
+import { useTTS } from "@/hooks/use-tts";
 
 type Props = {
   initialPercentage: number;
@@ -31,7 +31,7 @@ export const Quiz = ({
 
   //////////Router & Transitions//////////
   const router = useRouter();
-  const [pending, startTransition] = useTransition();
+  const [isPending, startTransition] = useTransition();
 
   //////////Constants//////////
   const lessonAssistant = "softy";
@@ -39,7 +39,7 @@ export const Quiz = ({
   //////////State//////////
   const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
 
-  const [lessonId] = useState(initialLessonId);
+  const lessonId = initialLessonId;
 
   const [percentage, setPercentage] = useState(() => {
     return initialPercentage === 100 ? 0 : initialPercentage;
@@ -63,58 +63,14 @@ export const Quiz = ({
   const options = challenge?.challengeOptions ?? [];
   const explanation = challenge?.explanation ?? "";
 
-  //////////Audio + TTS//////////
-  const { volume } = useAudioSettings();
-  const { speak } = useTTS();
-
-  const correctAudioRef = useRef<HTMLAudioElement | null>(null);
-  const incorrectAudioRef = useRef<HTMLAudioElement | null>(null);
-  const completionAudioRef = useRef<HTMLAudioElement | null>(null);
-
-  const playSound = (audio: HTMLAudioElement | null) => {
-    if (!audio) return;
-    audio.pause();
-    audio.currentTime = 0;
-    audio.play().catch(() => {});
-  };
-
   //////////Effects//////////
+
+  const { playCorrect, playIncorrect, playCompletion } = useQuizAudio();
+  const { speak } = useTTS();
 
   useEffect(() => {
     setWindowSize({ width: window.innerWidth, height: window.innerHeight });
   }, []);
-
-  useEffect(() => {
-    const correct = new Audio("/assets/sounds/lesson/correct.wav");
-    const incorrect = new Audio("/assets/sounds/lesson/incorrect.wav");
-    const completion = new Audio("/assets/sounds/lesson/completion.wav");
-
-    correct.preload = "auto";
-    incorrect.preload = "auto";
-    completion.preload = "auto";
-
-    correctAudioRef.current = correct;
-    incorrectAudioRef.current = incorrect;
-    completionAudioRef.current = completion;
-  }, []);
-
-  useEffect(() => {
-    if (correctAudioRef.current) correctAudioRef.current.volume = volume;
-    if (incorrectAudioRef.current) incorrectAudioRef.current.volume = volume;
-  }, [volume]);
-
-  useEffect(() => {
-    if (challenge) return;
-
-    const audio = completionAudioRef.current;
-    if (!audio) return;
-
-    audio.pause();
-    audio.currentTime = 0;
-    audio.volume = volume;
-
-    audio.play().catch(() => {});
-  }, [challenge, volume]);
 
   useEffect(() => {
     setShowExplanation(false);
@@ -122,22 +78,15 @@ export const Quiz = ({
     setSelectedOption(undefined);
   }, [activeIndex]);
 
+  const isComplete = activeIndex >= challenges.length;
+
+  useEffect(() => {
+    if (!isComplete) return;
+    playCompletion();
+  }, [isComplete, playCompletion]);
+
   //////////Navigation//////////
   const onNext = () => setActiveIndex((c) => c + 1);
-
-  //////////TTS//////////
-  const speakCurrent = () => {
-    if (!challenge) return;
-
-    const opts = challenge.challengeOptions ?? [];
-
-    const text =
-      challenge.question +
-      ". " +
-      opts.map((o) => o.text).join(". ");
-
-    speak(text);
-  };
 
   //////////Tracking//////////
 
@@ -154,77 +103,37 @@ export const Quiz = ({
 
   const [attemptsForCurrent, setAttemptsForCurrent] = useState(0);
 
+  const { onSelect, onContinue, speakCurrent } = useQuizHandlers({
+    challenge,
+    options,
+
+    status,
+    selectedOption,
+
+    setStatus,
+    setSelectedOption,
+    setShowExplanation,
+
+    setPercentage,
+
+    attemptsForCurrent,
+    setAttemptsForCurrent,
+
+    challengesLength: challenges.length,
+
+    playCorrect,
+    playIncorrect,
+
+    onAdvance: () => setActiveIndex((c) => c + 1),
+
+    onPersistCorrect: (id: number) => upsertChallengeProgress(id),
+    onPersistWrong: (id: number) => upsertChallengeProgress(id),
+  });
+
   useEffect(() => {
     questionStartRef.current = Date.now();
     setAttemptsForCurrent(0);
   }, [activeIndex]);
-
-  //////////Handlers//////////
-  const onSelect = (id: number) => {
-    if (status !== "none") return;
-    setSelectedOption(id);
-  };
-
-  const onContinue = () => {
-    if (selectedOption == null) return;
-
-    const isCorrect = evaluateChallenge(challenge, selectedOption, options);
-
-    const now = Date.now();
-    const timeSpent = now - questionStartRef.current;
-
-    if (status === "wrong") {
-      setStatus("none");
-      setSelectedOption(undefined);
-      setShowExplanation(false);
-      return;
-    }
-
-    if (status === "correct") {
-      setStatus("none");
-      setSelectedOption(undefined);
-      setShowExplanation(false);
-      onNext();
-      return;
-    }
-
-    setMetrics((prev) => ({
-      ...prev,
-      totalAttempts: prev.totalAttempts + 1,
-      questionTimes:
-        isCorrect ? [...prev.questionTimes, timeSpent] : prev.questionTimes,
-      correctAnswers: isCorrect ? prev.correctAnswers + 1 : prev.correctAnswers,
-      firstTryCorrect:
-        isCorrect && attemptsForCurrent === 0
-          ? prev.firstTryCorrect + 1
-          : prev.firstTryCorrect,
-    }));
-
-    setAttemptsForCurrent((a) => a + 1);
-
-    if (isCorrect) {
-      playSound(correctAudioRef.current);
-
-      setStatus("correct");
-      setPercentage((p) => p + 100 / challenges.length);
-
-      startTransition(() => {
-        upsertChallengeProgress(challenge.id);
-      });
-
-      setShowExplanation(true);
-    } else {
-      playSound(incorrectAudioRef.current);
-
-      setStatus("wrong");
-
-      startTransition(() => {
-        upsertChallengeProgress(challenge.id);
-      });
-
-      setShowExplanation(true);
-    }
-  };
 
   //////////Final Metrics//////////
 
@@ -271,7 +180,7 @@ export const Quiz = ({
     <div className="h-screen flex flex-col overflow-hidden">
       <Header
         percentage={percentage}
-        onSpeak={speakCurrent}
+        onSpeak={() => speakCurrent(speak)}
       />
 
       <div className="flex-1 grid grid-cols-[30%_40%_30%] items-stretch overflow-hidden">
@@ -293,7 +202,7 @@ export const Quiz = ({
                 selectedOption={selectedOption}
                 onSelect={onSelect}
                 status={status}
-                disabled={pending}
+                disabled={isPending}
               />
             )}
 
@@ -304,7 +213,7 @@ export const Quiz = ({
                 selectedOption={selectedOption}
                 onSelect={onSelect}
                 status={status}
-                disabled={pending}
+                disabled={isPending}
               />
             )}
           </div>
@@ -315,7 +224,7 @@ export const Quiz = ({
 
       <div className="shrink-0">
         <Footer
-          disabled={pending || !selectedOption}
+          disabled={isPending || !selectedOption}
           status={status}
           onCheck={onContinue}
         />
