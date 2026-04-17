@@ -1,15 +1,49 @@
 "use client";
 
+import { resultMessages } from "@/lib/result-messages";
 import Image from "next/image";
 import Confetti from "react-confetti";
 import { useWindowSize } from "react-use";
 
 type ResultCardProps = {
   totalPoints: number;
+  accuracy: number;
+  sessionTime: number;
 };
 
-export const ResultCard = ({ totalPoints }: ResultCardProps) => {
+export const ResultCard = ({ totalPoints, accuracy, sessionTime }: ResultCardProps) => {
   const { width, height } = useWindowSize();
+
+  const formatTime = (ms: number) => {
+    const totalSeconds = Math.floor(ms / 1000);
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+  };
+
+  const getMessage = (accuracy: number) => {
+    if (accuracy === 1) {
+      return resultMessages.perfect[
+        Math.floor(Math.random() * resultMessages.perfect.length)
+      ];
+    }
+
+    if (accuracy >= 0.81) {
+      return resultMessages.high[
+        Math.floor(Math.random() * resultMessages.high.length)
+      ];
+    }
+
+    if (accuracy >= 0.61) {
+      return resultMessages.mid[
+        Math.floor(Math.random() * resultMessages.mid.length)
+      ];
+    }
+
+    return resultMessages.low[
+      Math.floor(Math.random() * resultMessages.low.length)
+    ];
+  };
 
   return (
     <>
@@ -38,7 +72,7 @@ export const ResultCard = ({ totalPoints }: ResultCardProps) => {
         />
 
         <h1 className="text-xl lg:text-3xl font-bold text-slate-600">
-          Great Job! You completed the lesson!
+          {getMessage(accuracy)}
         </h1>
 
         <div className="flex items-stretch gap-x-4 w-full">
@@ -75,7 +109,7 @@ export const ResultCard = ({ totalPoints }: ResultCardProps) => {
                 width={20}
                 className="mr-1.5 sm:h-6 sm:w-6 md:h-7.5 md:w-7.5"
               />
-              100%
+              {Math.round(accuracy * 100)}%
             </div>
           </div>
 
@@ -93,7 +127,7 @@ export const ResultCard = ({ totalPoints }: ResultCardProps) => {
                 width={20}
                 className="mr-1.5 sm:h-6 sm:w-6 md:h-7.5 md:w-7.5"
               />
-              1:00
+              {formatTime(sessionTime)}
             </div>
           </div>
 

@@ -139,6 +139,26 @@ export const Quiz = ({
     speak(text);
   };
 
+  //////////Tracking//////////
+
+  const sessionStartRef = useRef<number>(Date.now());
+  const questionStartRef = useRef<number>(Date.now());
+
+  const [metrics, setMetrics] = useState({
+    totalQuestions: challenges.length,
+    totalAttempts: 0,
+    correctAnswers: 0,
+    firstTryCorrect: 0,
+    questionTimes: [] as number[],
+  });
+
+  const [attemptsForCurrent, setAttemptsForCurrent] = useState(0);
+
+  useEffect(() => {
+    questionStartRef.current = Date.now();
+    setAttemptsForCurrent(0);
+  }, [activeIndex]);
+
   //////////Handlers//////////
   const onSelect = (id: number) => {
     if (status !== "none") return;
@@ -149,6 +169,9 @@ export const Quiz = ({
     if (selectedOption == null) return;
 
     const isCorrect = evaluateChallenge(challenge, selectedOption, options);
+
+    const now = Date.now();
+    const timeSpent = now - questionStartRef.current;
 
     if (status === "wrong") {
       setStatus("none");
@@ -164,6 +187,20 @@ export const Quiz = ({
       onNext();
       return;
     }
+
+    setMetrics((prev) => ({
+      ...prev,
+      totalAttempts: prev.totalAttempts + 1,
+      questionTimes:
+        isCorrect ? [...prev.questionTimes, timeSpent] : prev.questionTimes,
+      correctAnswers: isCorrect ? prev.correctAnswers + 1 : prev.correctAnswers,
+      firstTryCorrect:
+        isCorrect && attemptsForCurrent === 0
+          ? prev.firstTryCorrect + 1
+          : prev.firstTryCorrect,
+    }));
+
+    setAttemptsForCurrent((a) => a + 1);
 
     if (isCorrect) {
       playSound(correctAudioRef.current);
@@ -189,12 +226,36 @@ export const Quiz = ({
     }
   };
 
+  //////////Final Metrics//////////
+
+  const sessionTime = Date.now() - sessionStartRef.current;
+
+  const accuracy =
+    metrics.totalAttempts === 0
+      ? 0
+      : metrics.correctAnswers / metrics.totalAttempts;
+
+  const firstTryAccuracy =
+    metrics.totalQuestions === 0
+      ? 0
+      : metrics.firstTryCorrect / metrics.totalQuestions;
+
+  const avgQuestionTime =
+    metrics.questionTimes.length === 0
+      ? 0
+      : metrics.questionTimes.reduce((a, b) => a + b, 0) /
+        metrics.questionTimes.length;
+
   //////////Render//////////
   if (!challenge) {
     return (
       <div className="flex flex-col min-h-screen">
         <div className="flex-1 flex items-center justify-center">
-          <ResultCard totalPoints={challenges.length * 10} />
+          <ResultCard
+            totalPoints={challenges.length * 10}
+            accuracy={accuracy}
+            sessionTime={sessionTime}
+          />
         </div>
 
         <Footer
