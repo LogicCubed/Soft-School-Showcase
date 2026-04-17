@@ -11,6 +11,21 @@ type ResultCardProps = {
   sessionTime: number;
 };
 
+function renderAnimatedText(text: string, trigger: string | number) {
+  return text.split("").map((char, i) => (
+    <span
+      key={`${trigger}-${i}`}
+      className="letter-pop"
+      style={{
+        animationDelay: `${i * 30}ms`,
+        display: "inline-block",
+      }}
+    >
+      {char === " " ? "\u00A0" : char}
+    </span>
+  ));
+}
+
 export const ResultCard = ({ totalPoints, accuracy, sessionTime }: ResultCardProps) => {
   const { width, height } = useWindowSize();
 
@@ -45,6 +60,10 @@ export const ResultCard = ({ totalPoints, accuracy, sessionTime }: ResultCardPro
     ];
   };
 
+  const message = getMessage(accuracy);
+  const isHighPerformance = accuracy >= 0.81;
+  const animKey = isHighPerformance ? "high" : "normal";
+
   return (
     <>
       <Confetti
@@ -72,7 +91,9 @@ export const ResultCard = ({ totalPoints, accuracy, sessionTime }: ResultCardPro
         />
 
         <h1 className="text-xl lg:text-3xl font-bold text-slate-600">
-          {getMessage(accuracy)}
+          {isHighPerformance
+            ? renderAnimatedText(message, animKey)
+            : message}
         </h1>
 
         <div className="flex items-stretch gap-x-4 w-full">

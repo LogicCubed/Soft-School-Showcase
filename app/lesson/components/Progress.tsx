@@ -30,11 +30,12 @@ function Progress({ className, value, streak, ...props }: Props) {
     <div className="relative w-full">
       {showStreak && streakLabel && (
         <div
-          className="absolute text-lg font-semibold text-[#FFAA00] z-50 whitespace-nowrap animate-[streakPop_400ms_ease-out]"
+          key={streak}
+          className="absolute text-lg font-semibold text-[#FFAA00] z-50 whitespace-nowrap streak-pop"
           style={{
             left: `${value ?? 0}%`,
-            transform: "translate(-50%, -100%)",
             top: "-8px",
+            transform: "translate(-50%, -100%)",
           }}
         >
           {streakLabel}
