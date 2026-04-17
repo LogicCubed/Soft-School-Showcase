@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useLoading } from "@/store/loadingStore";
-import { quotes } from "@/lib/quotes";
+import { quotes } from "@/lib/copy/quotes";
 
 export const LoadingScreen = () => {
   const isLoading = useLoading((s) => s.isLoading);

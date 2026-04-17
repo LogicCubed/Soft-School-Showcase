@@ -1,6 +1,6 @@
 "use client";
 
-import { resultMessages } from "@/lib/result-messages";
+import { resultMessages } from "@/lib/copy/result-messages";
 import Image from "next/image";
 import Confetti from "react-confetti";
 import { useWindowSize } from "react-use";

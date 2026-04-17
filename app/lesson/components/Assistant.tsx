@@ -1,5 +1,7 @@
 import { assistants, AssistantKey } from "@/lib/assistants";
+import { getCorrectFeedback } from "@/lib/copy/feedback";
 import Image from "next/image";
+import { useEffect, useState } from "react";
 
 type Props = {
   id: AssistantKey;
@@ -10,6 +12,14 @@ type Props = {
 
 export const Assistant = ({ id, explanation, status, show }: Props) => {
   const assistant = assistants[id];
+
+  const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    if (status === "correct") {
+      setMessage(getCorrectFeedback());
+    }
+  }, [status]);
 
   return (
     <div className="relative flex items-center justify-center w-full h-full overflow-visible">
@@ -29,7 +39,7 @@ export const Assistant = ({ id, explanation, status, show }: Props) => {
             absolute bottom-80 mb-4
             w-fit max-w-55
             px-5 py-3
-            rounded-full
+            rounded-2xl
             bg-white border-2 border-slate-400
             text-slate-800 text-sm text-center
             whitespace-normal wrap-break-word
@@ -38,7 +48,7 @@ export const Assistant = ({ id, explanation, status, show }: Props) => {
             ${show ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"}
           `}
         >
-          {status === "correct" ? "Great Job!" : explanation}
+          {status === "correct" ? message : explanation}
 
           <div className="absolute left-1/2 -bottom-2 w-0 h-0 border-x-8 border-x-transparent border-t-8 -translate-x-1/2 border-slate-400" />
         </div>
