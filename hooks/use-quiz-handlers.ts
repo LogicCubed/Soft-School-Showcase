@@ -1,31 +1,41 @@
 "use client";
 
 import { evaluateChallenge } from "@/lib/evaluate-challenge";
+import { Dispatch, SetStateAction } from "react";
 
 type Params = {
-  challenge: any;
-  options: any[];
+    challenge: any;
+    options: any[];
 
-  status: "correct" | "wrong" | "none";
-  selectedOption?: number;
+    status: "correct" | "wrong" | "none";
+    selectedOption?: number;
 
-  setStatus: (v: "correct" | "wrong" | "none") => void;
-  setSelectedOption: (v?: number) => void;
-  setShowExplanation: (v: boolean) => void;
+    setStatus: (v: "correct" | "wrong" | "none") => void;
+    setSelectedOption: (v?: number) => void;
+    setShowExplanation: (v: boolean) => void;
 
-  setPercentage: (fn: (p: number) => number) => void;
+    setPercentage: (fn: (p: number) => number) => void;
 
-  attemptsForCurrent: number;
-  setAttemptsForCurrent: (fn: (a: number) => number) => void;
+    attemptsForCurrent: number;
+    setAttemptsForCurrent: (fn: (a: number) => number) => void;
 
-  challengesLength: number;
+    challengesLength: number;
 
-  playCorrect: () => void;
-  playIncorrect: () => void;
+    playCorrect: () => void;
+    playIncorrect: () => void;
 
-  onAdvance: () => void;
-  onPersistCorrect: (challengeId: number) => void;
-  onPersistWrong: (challengeId: number) => void;
+    onAdvance: () => void;
+    onPersistCorrect: (challengeId: number) => void;
+    onPersistWrong: (challengeId: number) => void;
+
+    setStreak: Dispatch<SetStateAction<number>>;
+    setMetrics: Dispatch<SetStateAction<{
+        totalQuestions: number;
+        totalAttempts: number;
+        correctAnswers: number;
+        firstTryCorrect: number;
+        questionTimes: number[];
+    }>>;
 };
 
 export const useQuizHandlers = ({
@@ -52,6 +62,9 @@ export const useQuizHandlers = ({
   onAdvance,
   onPersistCorrect,
   onPersistWrong,
+
+  setStreak,
+  setMetrics,
 }: Params) => {
   const onSelect = (id: number) => {
     if (status !== "none") return;
@@ -81,22 +94,42 @@ export const useQuizHandlers = ({
     setAttemptsForCurrent((a) => a + 1);
 
     if (isCorrect) {
-      playCorrect();
+        playCorrect();
 
-      setStatus("correct");
-      setPercentage((p) => p + 100 / challengesLength);
+        setStatus("correct");
 
-      onPersistCorrect(challenge.id);
+        setStreak((s) => {
+            const next = s + 1;
+            console.log("streak ++", next);
+            return next;
+        });
 
-      setShowExplanation(true);
+        setMetrics((m) => ({
+            ...m,
+            totalAttempts: m.totalAttempts + 1,
+            correctAnswers: m.correctAnswers + 1,
+        }));
+
+        setPercentage((p) => p + 100 / challengesLength);
+
+        onPersistCorrect(challenge.id);
+
+        setShowExplanation(true);
     } else {
-      playIncorrect();
+        playIncorrect();
 
-      setStatus("wrong");
+        setStatus("wrong");
 
-      onPersistWrong(challenge.id);
+        setStreak(0);
 
-      setShowExplanation(true);
+        setMetrics((m) => ({
+            ...m,
+            totalAttempts: m.totalAttempts + 1,
+        }));
+
+        onPersistWrong(challenge.id);
+
+        setShowExplanation(true);
     }
   };
 

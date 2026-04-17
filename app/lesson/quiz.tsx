@@ -92,6 +92,7 @@ export const Quiz = ({
 
   const sessionStartRef = useRef<number>(Date.now());
   const questionStartRef = useRef<number>(Date.now());
+  const [streak, setStreak] = useState(0);
 
   const [metrics, setMetrics] = useState({
     totalQuestions: challenges.length,
@@ -128,6 +129,9 @@ export const Quiz = ({
 
     onPersistCorrect: (id: number) => upsertChallengeProgress(id),
     onPersistWrong: (id: number) => upsertChallengeProgress(id),
+
+    setStreak,
+    setMetrics,
   });
 
   useEffect(() => {
@@ -143,17 +147,6 @@ export const Quiz = ({
     metrics.totalAttempts === 0
       ? 0
       : metrics.correctAnswers / metrics.totalAttempts;
-
-  const firstTryAccuracy =
-    metrics.totalQuestions === 0
-      ? 0
-      : metrics.firstTryCorrect / metrics.totalQuestions;
-
-  const avgQuestionTime =
-    metrics.questionTimes.length === 0
-      ? 0
-      : metrics.questionTimes.reduce((a, b) => a + b, 0) /
-        metrics.questionTimes.length;
 
   //////////Render//////////
   if (!challenge) {
@@ -180,17 +173,18 @@ export const Quiz = ({
     <div className="h-screen flex flex-col overflow-hidden">
       <Header
         percentage={percentage}
+        streak={streak}
         onSpeak={() => speakCurrent(speak)}
       />
 
       <div className="flex-1 grid grid-cols-[30%_40%_30%] items-stretch overflow-hidden">
         <div className="flex items-center justify-end pr-6">
           <Assistant
-          id={lessonAssistant}
-          status={status}
-          show={showExplanation && status !== "none"}
-          explanation={explanation}
-        />
+            id={lessonAssistant}
+            status={status}
+            show={showExplanation && status !== "none"}
+            explanation={explanation}
+          />
         </div>
 
         <div className="flex items-center justify-center">
