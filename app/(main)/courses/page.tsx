@@ -1,5 +1,4 @@
-
-import { getCourses, getUserProgress } from "@/db/queries";
+import { getCourses, getUserProgress, getCourseProgressPercentage } from "@/db/queries";
 import { List } from "./list";
 import Head from "next/head";
 
@@ -8,6 +7,17 @@ const CoursesPage = async () => {
     getCourses(),
     getUserProgress(),
   ]);
+
+  const coursesWithProgress = await Promise.all(
+    courses.map(async (course) => {
+      const progress = await getCourseProgressPercentage(course.id);
+
+      return {
+        ...course,
+        progress,
+      };
+    })
+  );
 
   return (
     <>
@@ -29,7 +39,7 @@ const CoursesPage = async () => {
 
         <section>
           <List
-            courses={courses}
+            courses={coursesWithProgress}
             activeCourseId={userProgress?.activeCourseId ?? undefined}
           />
         </section>

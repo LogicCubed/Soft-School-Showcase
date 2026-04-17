@@ -240,6 +240,37 @@ export const getLessonPercentage = cache(async () => {
     return percentage;
 })
 
+// Computes the percentage of completed challenges for a given course and user.
+// Traverses units → lessons → challenges and joins user challenge progress.
+// Returns a value from 0–100 representing overall course completion.
+
+export const getCourseProgressPercentage = async (courseId: number) => {
+    const { userId } = await auth();
+
+    if (!userId) return 0;
+
+    const rows = await db
+        .select({
+            completed: challengeProgress.completed,
+        })
+        .from(units)
+        .innerJoin(lessons, eq(lessons.unitId, units.id))
+        .innerJoin(challenges, eq(challenges.lessonId, lessons.id))
+        .leftJoin(
+            challengeProgress,
+            eq(challengeProgress.challengeId, challenges.id)
+        )
+        .where(eq(units.courseId, courseId));
+
+    const total = rows.length;
+
+    const completed = rows.filter((r) => r.completed === true).length;
+
+    if (total === 0) return 0;
+
+    return Math.round((completed / total) * 100);
+};
+
 // Fetches the top 10 users based on points, ordered descendingly.
 // Includes userId, userName, userImageSrc, and points.
 // Requires the current user to be authenticated.
