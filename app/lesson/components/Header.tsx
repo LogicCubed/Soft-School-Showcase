@@ -16,8 +16,6 @@ export const Header = ({ percentage, streak, onSpeak }: Props) => {
   const { open: openExitModal } = useExitModal();
   const { open: openSettingsModal } = useSettingsModal();
 
-  const isStreakActive = streak >= 3;
-
   return (
     <header className="lg:pt-12.5 pt-5 px-10 flex gap-x-7 items-center justify-between max-w-285 mx-auto w-full">
       
@@ -29,7 +27,9 @@ export const Header = ({ percentage, streak, onSpeak }: Props) => {
       />
 
       {/* CENTER */}
-      <Progress value={percentage} streak={streak} />
+      <div className="flex-1 relative">
+        <Progress value={percentage} streak={streak} />
+      </div>
 
       {/* RIGHT */}
       <div className="flex items-center gap-x-4">

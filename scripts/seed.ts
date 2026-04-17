@@ -112,6 +112,31 @@ const main = async () => {
         explanation: "Ignoring mistakes reduces growth and creates repeated issues.",
         questionImage: null,
       },
+
+      // NEW QUESTIONS
+      {
+        id: 6,
+        lessonId: 1,
+        type: "MULTIPLE_CHOICE",
+        order: 5,
+        question: "A teammate misses a deadline. What is the best response?",
+        callToAction: "Pick the best response",
+        hint: "Focus on clarity and support, not blame.",
+        explanation: "Addressing the cause while offering support improves future performance.",
+        questionImage: null,
+      },
+      {
+        id: 7,
+        lessonId: 1,
+        type: "TRUE_FALSE",
+        order: 6,
+        question: "Giving feedback should focus only on what went wrong.",
+        callToAction: "Select True or False",
+        hint: "Think about balanced feedback.",
+        explanation: "Effective feedback includes both strengths and improvements.",
+        questionImage: null,
+      },
+
       {
         id: 5,
         lessonId: 2,
@@ -186,6 +211,40 @@ const main = async () => {
       },
       {
         challengeId: 4,
+        correct: true,
+        text: "False",
+      },
+
+      // NEW OPTIONS FOR 6
+      {
+        challengeId: 6,
+        correct: true,
+        text: "Ask what caused the delay and help plan next steps",
+      },
+      {
+        challengeId: 6,
+        correct: false,
+        text: "Ignore it and move on",
+      },
+      {
+        challengeId: 6,
+        correct: false,
+        text: "Blame them for being unprofessional",
+      },
+      {
+        challengeId: 6,
+        correct: false,
+        text: "Report them immediately without discussion",
+      },
+
+      // NEW OPTIONS FOR 7
+      {
+        challengeId: 7,
+        correct: false,
+        text: "True",
+      },
+      {
+        challengeId: 7,
         correct: true,
         text: "False",
       },

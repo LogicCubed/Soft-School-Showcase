@@ -132,6 +132,7 @@ export const Quiz = ({
 
     setStreak,
     setMetrics,
+    activeIndex,
   });
 
   useEffect(() => {
