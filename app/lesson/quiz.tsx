@@ -13,6 +13,7 @@ import { TrueFalse } from "./components/challenges/TrueFalse";
 import { upsertChallengeProgress } from "@/actions/challenge-progress";
 import { useQuizAudio } from "@/hooks/use-quiz-audio";
 import { useTTS } from "@/hooks/use-tts";
+import { MultiSelect } from "./components/challenges/MultiSelect";
 
 type Props = {
   initialPercentage: number;
@@ -53,6 +54,7 @@ export const Quiz = ({
   });
 
   const [selectedOption, setSelectedOption] = useState<number>();
+  const [selectedOptions, setSelectedOptions] = useState<number[]>([]);
 
   const [status, setStatus] = useState<"correct" | "wrong" | "none">("none");
 
@@ -75,7 +77,7 @@ export const Quiz = ({
   useEffect(() => {
     setShowExplanation(false);
     setStatus("none");
-    setSelectedOption(undefined);
+    setSelectedOptions([]);
   }, [activeIndex]);
 
   const isComplete = activeIndex >= challenges.length;
@@ -110,9 +112,11 @@ export const Quiz = ({
 
     status,
     selectedOption,
+    selectedOptions,
 
     setStatus,
     setSelectedOption,
+    setSelectedOptions,
     setShowExplanation,
 
     setPercentage,
@@ -192,27 +196,50 @@ export const Quiz = ({
 
         <div className="flex items-center justify-center">
           <div className="w-full max-w-180 flex flex-col gap-y-12">
-            {challenge.type === "MULTIPLE_CHOICE" && (
-              <MultipleChoice
-                challenge={challenge}
-                options={options}
-                selectedOption={selectedOption}
-                onSelect={onSelect}
-                status={status}
-                disabled={isPending}
-              />
-            )}
 
-            {challenge.type === "TRUE_FALSE" && (
-              <TrueFalse
-                challenge={challenge}
-                options={options}
-                selectedOption={selectedOption}
-                onSelect={onSelect}
-                status={status}
-                disabled={isPending}
-              />
-            )}
+            <div className="flex flex-col gap-y-8 text-center">
+              <div className="flex flex-col gap-y-2">
+                <h1 className="text-lg lg:text-3xl font-bold text-neutral-700">
+                  {challenge.question}
+                </h1>
+
+                <p className="text-neutral-500 text-sm lg:text-base">
+                  {challenge.callToAction}
+                </p>
+              </div>
+
+              {challenge.type === "MULTIPLE_CHOICE" && (
+                <MultipleChoice
+                  challenge={challenge}
+                  options={options}
+                  selectedOption={selectedOption}
+                  onSelect={onSelect}
+                  status={status}
+                  disabled={isPending}
+                />
+              )}
+
+              {challenge.type === "TRUE_FALSE" && (
+                <TrueFalse
+                  challenge={challenge}
+                  options={options}
+                  selectedOption={selectedOption}
+                  onSelect={onSelect}
+                  status={status}
+                  disabled={isPending}
+                />
+              )}
+
+              {challenge.type === "MULTI_SELECT" && (
+                <MultiSelect
+                  options={options}
+                  selectedOptions={selectedOptions}
+                  onToggle={onSelect}
+                  status={status}
+                  disabled={isPending}
+                />
+              )}
+            </div>
           </div>
         </div>
 
@@ -221,7 +248,12 @@ export const Quiz = ({
 
       <div className="shrink-0">
         <Footer
-          disabled={isPending || !selectedOption}
+          disabled={
+            isPending ||
+            (challenge.type === "MULTI_SELECT"
+              ? selectedOptions.length === 0
+              : !selectedOption)
+          }
           status={status}
           onCheck={onContinue}
         />

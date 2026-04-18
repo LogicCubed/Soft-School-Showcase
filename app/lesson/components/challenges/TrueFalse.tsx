@@ -24,16 +24,6 @@ export const TrueFalse = ({
 }: Props) => {
   return (
     <div className="flex flex-col gap-y-8 text-center">
-      <div className="flex flex-col gap-y-2">
-        <h1 className="text-lg lg:text-3xl font-bold text-neutral-700">
-          {challenge.question}
-        </h1>
-
-        <p className="text-neutral-500 text-sm lg:text-base">
-          {challenge.callToAction}
-        </p>
-      </div>
-
       <div className="flex justify-center gap-6 w-full">
         {options.map((option) => {
           const isSelected = selectedOption === option.id;

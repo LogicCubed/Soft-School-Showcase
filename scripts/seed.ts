@@ -112,8 +112,19 @@ const main = async () => {
         explanation: "Ignoring mistakes reduces growth and creates repeated issues.",
         questionImage: null,
       },
+      {
+        id: 5,
+        lessonId: 2,
+        type: "MULTIPLE_CHOICE",
+        order: 1,
+        question: "A coworker disagrees with you. What is best?",
+        callToAction: "Pick the best response",
+        hint: "Focus on understanding before responding.",
+        explanation: "Understanding before responding reduces conflict.",
+        questionImage: null,
+      },
 
-      // NEW QUESTIONS
+      // NEW MULTI_SELECT CHALLENGES
       {
         id: 6,
         lessonId: 1,
@@ -136,16 +147,26 @@ const main = async () => {
         explanation: "Effective feedback includes both strengths and improvements.",
         questionImage: null,
       },
-
       {
-        id: 5,
-        lessonId: 2,
-        type: "MULTIPLE_CHOICE",
-        order: 1,
-        question: "A coworker disagrees with you. What is best?",
-        callToAction: "Pick the best response",
-        hint: "Focus on understanding before responding.",
-        explanation: "Understanding before responding reduces conflict.",
+        id: 8,
+        lessonId: 1,
+        type: "MULTI_SELECT",
+        order: 7,
+        question: "Which actions help de-escalate conflict?",
+        callToAction: "Select all that apply",
+        hint: "Think calm, not reactive responses.",
+        explanation: "De-escalation comes from calm tone, listening, and validating feelings.",
+        questionImage: null,
+      },
+      {
+        id: 9,
+        lessonId: 1,
+        type: "MULTI_SELECT",
+        order: 8,
+        question: "Which behaviors damage team trust?",
+        callToAction: "Select all that apply",
+        hint: "Think long-term impact on relationships.",
+        explanation: "Blame, ignoring issues, and public shaming reduce trust.",
         questionImage: null,
       },
     ]);
@@ -215,7 +236,27 @@ const main = async () => {
         text: "False",
       },
 
-      // NEW OPTIONS FOR 6
+      {
+        challengeId: 5,
+        correct: true,
+        text: "Listen to their perspective and respond calmly",
+      },
+      {
+        challengeId: 5,
+        correct: false,
+        text: "Immediately defend your position",
+      },
+      {
+        challengeId: 5,
+        correct: false,
+        text: "Ignore their opinion",
+      },
+      {
+        challengeId: 5,
+        correct: false,
+        text: "End the conversation",
+      },
+
       {
         challengeId: 6,
         correct: true,
@@ -237,7 +278,6 @@ const main = async () => {
         text: "Report them immediately without discussion",
       },
 
-      // NEW OPTIONS FOR 7
       {
         challengeId: 7,
         correct: false,
@@ -249,25 +289,48 @@ const main = async () => {
         text: "False",
       },
 
+      // MULTI_SELECT 8
       {
-        challengeId: 5,
+        challengeId: 8,
         correct: true,
-        text: "Listen to their perspective and respond calmly",
+        text: "Listening without interrupting",
       },
       {
-        challengeId: 5,
-        correct: false,
-        text: "Immediately defend your position",
+        challengeId: 8,
+        correct: true,
+        text: "Validating emotions",
       },
       {
-        challengeId: 5,
-        correct: false,
-        text: "Ignore their opinion",
+        challengeId: 8,
+        correct: true,
+        text: "Using calm tone",
       },
       {
-        challengeId: 5,
+        challengeId: 8,
         correct: false,
-        text: "End the conversation",
+        text: "Raising your voice",
+      },
+
+      // MULTI_SELECT 9
+      {
+        challengeId: 9,
+        correct: true,
+        text: "Blaming teammates publicly",
+      },
+      {
+        challengeId: 9,
+        correct: true,
+        text: "Ignoring repeated issues",
+      },
+      {
+        challengeId: 9,
+        correct: true,
+        text: "Shaming others in meetings",
+      },
+      {
+        challengeId: 9,
+        correct: false,
+        text: "Giving private constructive feedback",
       },
     ]);
 

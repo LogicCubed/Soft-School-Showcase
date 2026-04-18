@@ -3,15 +3,25 @@
 import { evaluateChallenge } from "@/lib/evaluate-challenge";
 import { Dispatch, SetStateAction } from "react";
 
+type Metrics = {
+  totalQuestions: number;
+  totalAttempts: number;
+  correctAnswers: number;
+  firstTryCorrect: number;
+  questionTimes: number[];
+};
+
 type Params = {
   challenge: any;
   options: any[];
 
   status: "correct" | "wrong" | "none";
   selectedOption?: number;
+  selectedOptions: number[];
 
   setStatus: (v: "correct" | "wrong" | "none") => void;
   setSelectedOption: (v?: number) => void;
+  setSelectedOptions: Dispatch<SetStateAction<number[]>>;
   setShowExplanation: (v: boolean) => void;
 
   setPercentage: Dispatch<SetStateAction<number>>;
@@ -29,15 +39,7 @@ type Params = {
   onPersistWrong: (challengeId: number) => void;
 
   setStreak: Dispatch<SetStateAction<number>>;
-  setMetrics: Dispatch<
-    SetStateAction<{
-      totalQuestions: number;
-      totalAttempts: number;
-      correctAnswers: number;
-      firstTryCorrect: number;
-      questionTimes: number[];
-    }>
-  >;
+  setMetrics: Dispatch<SetStateAction<Metrics>>;
 
   activeIndex: number;
 };
@@ -45,11 +47,14 @@ type Params = {
 export const useQuizHandlers = ({
   challenge,
   options,
+
   status,
   selectedOption,
+  selectedOptions,
 
-  setStatus,
+  setSelectedOptions,
   setSelectedOption,
+  setStatus,
   setShowExplanation,
   setPercentage,
 
@@ -71,16 +76,38 @@ export const useQuizHandlers = ({
 }: Params) => {
   const onSelect = (id: number) => {
     if (status !== "none") return;
+
+    if (challenge.type === "MULTI_SELECT") {
+      setSelectedOptions((prev) =>
+        prev.includes(id)
+          ? prev.filter((x) => x !== id)
+          : [...prev, id]
+      );
+      return;
+    }
+
     setSelectedOption(id);
   };
 
   const onContinue = () => {
-    if (selectedOption === undefined || !challenge) return;
+    if (!challenge) return;
 
-    const isCorrect = evaluateChallenge(challenge, selectedOption, options);
+    const isMulti = challenge.type === "MULTI_SELECT";
+
+    const hasNoAnswer =
+      isMulti
+        ? selectedOptions.length === 0
+        : selectedOption === undefined;
+
+    if (hasNoAnswer) return;
+
+    const answer = isMulti ? selectedOptions : selectedOption!;
+
+    const isCorrect = evaluateChallenge(challenge, answer, options);
 
     if (status === "wrong") {
       setStatus("none");
+      setSelectedOptions([]);
       setSelectedOption(undefined);
       setShowExplanation(false);
       return;
@@ -88,6 +115,7 @@ export const useQuizHandlers = ({
 
     if (status === "correct") {
       setStatus("none");
+      setSelectedOptions([]);
       setSelectedOption(undefined);
       setShowExplanation(false);
       onAdvance();
@@ -100,7 +128,6 @@ export const useQuizHandlers = ({
       playCorrect();
 
       setStatus("correct");
-
       setStreak((s) => s + 1);
 
       setMetrics((m) => ({
@@ -117,7 +144,6 @@ export const useQuizHandlers = ({
       playIncorrect();
 
       setStatus("wrong");
-
       setStreak(0);
 
       setMetrics((m) => ({
@@ -131,8 +157,6 @@ export const useQuizHandlers = ({
   };
 
   const speakCurrent = (speak: (text: string) => void) => {
-    if (!challenge) return;
-
     const text =
       challenge.question +
       ". " +
