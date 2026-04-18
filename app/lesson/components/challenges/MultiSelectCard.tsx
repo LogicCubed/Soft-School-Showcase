@@ -49,7 +49,6 @@ export const MultiSelectCard = ({
         disabled && "pointer-events-none"
       )}
     >
-      {/* checkbox */}
       <div className="absolute top-3 left-3">
         <div
           className={cn(
@@ -67,10 +66,11 @@ export const MultiSelectCard = ({
         </div>
       </div>
 
-      {/* content */}
-      <div className="pl-6 text-neutral-600 text-sm lg:text-base">
-        {text}
-      </div>
+        <div className="pl-7 flex items-center h-full text-left">
+            <div className="text-neutral-600 text-sm lg:text-base text-left leading-snug">
+                {text}
+            </div>
+        </div>
     </div>
   );
 };
