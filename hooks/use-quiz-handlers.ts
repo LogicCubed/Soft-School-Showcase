@@ -27,7 +27,7 @@ type Params = {
   setPercentage: Dispatch<SetStateAction<number>>;
 
   attemptsForCurrent: number;
-  setAttemptsForCurrent: (fn: (a: number) => number) => void;
+  setAttemptsForCurrent: Dispatch<SetStateAction<number>>;
 
   challengesLength: number;
 
@@ -37,6 +37,7 @@ type Params = {
   onAdvance: () => void;
   onPersistCorrect: (challengeId: number) => void;
   onPersistWrong: (challengeId: number) => void;
+  onWrongStreak?: () => void;
 
   setStreak: Dispatch<SetStateAction<number>>;
   setMetrics: Dispatch<SetStateAction<Metrics>>;
@@ -69,6 +70,7 @@ export const useQuizHandlers = ({
   onAdvance,
   onPersistCorrect,
   onPersistWrong,
+  onWrongStreak,
 
   setStreak,
   setMetrics,
@@ -122,8 +124,6 @@ export const useQuizHandlers = ({
       return;
     }
 
-    setAttemptsForCurrent((a) => a + 1);
-
     if (isCorrect) {
       playCorrect();
 
@@ -143,6 +143,9 @@ export const useQuizHandlers = ({
     } else {
       playIncorrect();
 
+      const next = attemptsForCurrent + 1;
+    setAttemptsForCurrent(next);
+
       setStatus("wrong");
       setStreak(0);
 
@@ -150,6 +153,10 @@ export const useQuizHandlers = ({
         ...m,
         totalAttempts: m.totalAttempts + 1,
       }));
+
+      if (next >= 1) {
+        onWrongStreak?.();
+      }
 
       onPersistWrong(challenge.id);
       setShowExplanation(true);

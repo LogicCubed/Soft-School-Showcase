@@ -24,21 +24,21 @@ type Props = {
   })[];
 };
 
+type HintState = "locked" | "available" | "shown";
+
 export const Quiz = ({
   initialPercentage,
   initialLessonId,
   initialLessonChallenges,
 }: Props) => {
-
-  //////////Router & Transitions//////////
   const router = useRouter();
-  const [isPending, startTransition] = useTransition();
+  const [isPending] = useTransition();
 
-  //////////Constants//////////
   const lessonAssistant = "softy";
 
-  //////////State//////////
   const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
+
+  const [attemptsForCurrent, setAttemptsForCurrent] = useState(0);
 
   const lessonId = initialLessonId;
 
@@ -58,42 +58,23 @@ export const Quiz = ({
 
   const [status, setStatus] = useState<"correct" | "wrong" | "none">("none");
 
+  const [wrongAttempts, setWrongAttempts] = useState(0);
+  const [hintState, setHintState] = useState<HintState>("locked");
+
   const [showExplanation, setShowExplanation] = useState(false);
 
-  //////////Derived//////////
+  const showHintMode = hintState !== "locked";
+
   const challenge = challenges[activeIndex];
   const options = challenge?.challengeOptions ?? [];
   const explanation = challenge?.explanation ?? "";
 
-  //////////Effects//////////
-
   const { playCorrect, playIncorrect, playCompletion } = useQuizAudio();
   const { speak, stop, isSpeaking } = useTTS();
 
-  useEffect(() => {
-    setWindowSize({ width: window.innerWidth, height: window.innerHeight });
-  }, []);
-
-  useEffect(() => {
-    setShowExplanation(false);
-    setStatus("none");
-    setSelectedOptions([]);
-  }, [activeIndex]);
-
-  const isComplete = activeIndex >= challenges.length;
-
-  useEffect(() => {
-    if (!isComplete) return;
-    playCompletion();
-  }, [isComplete, playCompletion]);
-
-  //////////Navigation//////////
-  const onNext = () => setActiveIndex((c) => c + 1);
-
-  //////////Tracking//////////
-
   const sessionStartRef = useRef<number>(Date.now());
   const questionStartRef = useRef<number>(Date.now());
+
   const [streak, setStreak] = useState(0);
 
   const [metrics, setMetrics] = useState({
@@ -104,7 +85,21 @@ export const Quiz = ({
     questionTimes: [] as number[],
   });
 
-  const [attemptsForCurrent, setAttemptsForCurrent] = useState(0);
+  useEffect(() => {
+    setWindowSize({ width: window.innerWidth, height: window.innerHeight });
+  }, []);
+
+  useEffect(() => {
+    questionStartRef.current = Date.now();
+    setWrongAttempts(0);
+    setHintState("locked");
+  }, [activeIndex]);
+
+  const isComplete = activeIndex >= challenges.length;
+
+  useEffect(() => {
+    if (isComplete) playCompletion();
+  }, [isComplete, playCompletion]);
 
   const { onSelect, onContinue, speakCurrent } = useQuizHandlers({
     challenge,
@@ -134,17 +129,18 @@ export const Quiz = ({
     onPersistCorrect: (id: number) => upsertChallengeProgress(id),
     onPersistWrong: (id: number) => upsertChallengeProgress(id),
 
+    onWrongStreak: () => {
+      setWrongAttempts((prev) => {
+        const next = prev + 1;
+        if (next >= 2) setHintState("available");
+        return next;
+      });
+    },
+
     setStreak,
     setMetrics,
     activeIndex,
   });
-
-  useEffect(() => {
-    questionStartRef.current = Date.now();
-    setAttemptsForCurrent(0);
-  }, [activeIndex]);
-
-  //////////Final Metrics//////////
 
   const sessionTime = Date.now() - sessionStartRef.current;
 
@@ -153,7 +149,6 @@ export const Quiz = ({
       ? 0
       : metrics.correctAnswers / metrics.totalAttempts;
 
-  //////////Render//////////
   if (!challenge) {
     return (
       <div className="flex flex-col min-h-screen">
@@ -184,19 +179,22 @@ export const Quiz = ({
         isSpeaking={isSpeaking}
       />
 
-      <div className="flex-1 grid grid-cols-[30%_40%_30%] items-stretch overflow-hidden">
+      <div className="flex-1 grid grid-cols-[30%_40%_30%] overflow-hidden">
         <div className="flex items-center justify-end pr-6">
           <Assistant
             id={lessonAssistant}
             status={status}
-            show={showExplanation && status !== "none"}
+            show={status !== "none"}
             explanation={explanation}
+            hint={challenge.hint}
+            showHintMode={showHintMode}
+            hintState={hintState}
+            onHintClick={() => setHintState("shown")}
           />
         </div>
 
         <div className="flex items-center justify-center">
           <div className="w-full max-w-180 flex flex-col gap-y-12">
-
             <div className="flex flex-col gap-y-8 text-center">
               <div className="flex flex-col gap-y-2">
                 <h1 className="text-lg lg:text-3xl font-bold text-neutral-700">

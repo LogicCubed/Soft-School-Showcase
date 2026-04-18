@@ -2,7 +2,7 @@ export const correctFeedback = [
   "Nice work!",
   "Great answer!",
   "That’s correct!",
-  "Well done!.",
+  "Well done!",
   "Great job!",
   "You got it!",
   "That’s right!",
