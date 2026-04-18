@@ -3,7 +3,7 @@
 import { assistants, AssistantKey } from "@/lib/assistants";
 import { getCorrectFeedback } from "@/lib/copy/feedback";
 import Image from "next/image";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 type Props = {
   id: AssistantKey;
@@ -27,7 +27,7 @@ export const Assistant = ({
 }: Props) => {
   const assistant = assistants[id];
 
-  const { text, isHint } = useMemo(() => {
+  const next = useMemo(() => {
     if (status === "correct") {
       return { text: getCorrectFeedback(), isHint: false };
     }
@@ -36,6 +36,25 @@ export const Assistant = ({
     }
     return { text: explanation, isHint: false };
   }, [status, hintState, hint, explanation]);
+
+  const showBubble =
+    show &&
+    status !== "none" &&
+    (status === "correct" || hintState === "shown" || hintState === "locked");
+
+  const [display, setDisplay] = useState(next);
+
+  useEffect(() => {
+    if (showBubble) {
+      setDisplay(next);
+    } else {
+      const t = setTimeout(() => {
+        setDisplay(next);
+      }, 150);
+
+      return () => clearTimeout(t);
+    }
+  }, [next, showBubble]);
 
   return (
     <div className="relative flex items-center justify-center w-full h-full overflow-visible">
@@ -49,59 +68,82 @@ export const Assistant = ({
         />
       </div>
 
-      {show && status !== "none" && hintState !== "available" && (
-        <div className="absolute bottom-75 mb-4 flex flex-col items-center z-20 transition-all duration-300 ease-in-out">
-
-          <div
-            className={`
-              w-fit max-w-55
-              px-5 py-3
-              rounded-2xl
-              border-2
-              text-sm text-center
-              whitespace-normal wrap-break-word
-              ${isHint
-                ? "bg-sky-50 border-sky-400 text-sky-700 font-medium"
-                : "bg-white border-slate-400 text-slate-800"
-              }
-            `}
-          >
-            {isHint ? (
-              <>
-                <span className="text-sky-400 font-bold">HINT: </span>
-                <span>{text}</span>
-              </>
-            ) : (
-              text
-            )}
-          </div>
-
-          <div
-            className={`
-              w-0 h-0 border-l-8 border-r-8 border-t-8 border-l-transparent border-r-transparent
-              ${isHint ? "border-t-sky-400" : "border-t-slate-400"}
-            `}
-          />
-        </div>
-      )}
-
-      {show && status !== "none" && hintState === "available" && (
+      <div
+        className={`
+          absolute bottom-75 mb-4 flex flex-col items-center z-20
+          transition-opacity
+          ${showBubble
+            ? "opacity-100 duration-200"
+            : "opacity-0 duration-100 pointer-events-none"}
+        `}
+      >
         <div
-          className="
-            absolute bottom-81.25
-            px-4 py-2
-            rounded-full
-            bg-sky-50 border border-sky-400
-            text-sky-500 font-semibold text-sm
-            cursor-pointer
-            hover:bg-sky-100 transition
-            z-30
-          "
-          onClick={onHintClick}
+          className={`
+            w-fit max-w-55
+            px-5 py-3
+            rounded-2xl
+            border-2
+            text-sm text-center
+            whitespace-normal wrap-break-word
+
+            origin-bottom
+            transition-transform
+
+            ${showBubble
+              ? "scale-100 translate-y-0 duration-300 ease-out"
+              : "scale-0 translate-y-4 duration-150 ease-in"
+            }
+
+            ${display.isHint
+              ? "bg-sky-50 border-sky-400 text-sky-700 font-medium"
+              : "bg-white border-slate-400 text-slate-800"
+            }
+          `}
         >
-          Click me for a hint!
+          {display.isHint ? (
+            <>
+              <span className="text-sky-400 font-bold text-base">HINT: </span>
+              <span>{display.text}</span>
+            </>
+          ) : (
+            display.text
+          )}
         </div>
-      )}
+
+        <div
+          className={`
+            w-0 h-0 border-l-8 border-r-8 border-t-8 border-l-transparent border-r-transparent
+            transition-transform
+
+            ${showBubble
+              ? "scale-100 duration-300 ease-out"
+              : "scale-0 duration-150 ease-in"
+            }
+
+            ${display.isHint ? "border-t-sky-400" : "border-t-slate-400"}
+          `}
+        />
+      </div>
+
+      {show &&
+        status === "wrong" &&
+        hintState === "available" && (
+          <div
+            className="
+              absolute bottom-81.25
+              px-4 py-2
+              rounded-full
+              bg-sky-50 border border-sky-400
+              text-sky-500 font-semibold text-sm
+              cursor-pointer
+              hover:bg-sky-100 transition
+              z-30 animate-bounce
+            "
+            onClick={onHintClick}
+          >
+            Click me for a hint!
+          </div>
+        )}
 
       <div
         className="relative z-10 cursor-pointer hover:scale-110 transition-transform animate-float"
