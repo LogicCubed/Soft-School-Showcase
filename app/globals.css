@@ -102,3 +102,18 @@ body {
   transform-origin: bottom center;
   animation: scaleInFromBottom 250ms ease-out;
 }
+
+@keyframes streakParticle {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(60px, -40px) scale(0.2);
+    opacity: 0;
+  }
+}
+
+.streak-particle {
+  animation: streakParticle 700ms ease-out forwards;
+}
