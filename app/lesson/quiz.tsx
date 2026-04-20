@@ -58,6 +58,9 @@ export const Quiz = ({
 
   const [status, setStatus] = useState<"correct" | "wrong" | "none">("none");
 
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [pendingIndex, setPendingIndex] = useState<number | null>(null);
+
   const [wrongAttempts, setWrongAttempts] = useState(0);
   const [hintState, setHintState] = useState<HintState>("locked");
 
@@ -95,6 +98,23 @@ export const Quiz = ({
     setHintState("locked");
   }, [activeIndex]);
 
+  useEffect(() => {
+    if (!isTransitioning || pendingIndex === null) return;
+
+    const exit = setTimeout(() => {
+      setActiveIndex(pendingIndex);
+      setPendingIndex(null);
+
+      const enter = setTimeout(() => {
+        setIsTransitioning(false);
+      }, 80);
+
+      return () => clearTimeout(enter);
+    }, 150);
+
+    return () => clearTimeout(exit);
+  }, [isTransitioning, pendingIndex]);
+
   const isComplete = activeIndex >= challenges.length;
 
   useEffect(() => {
@@ -124,7 +144,12 @@ export const Quiz = ({
     playCorrect,
     playIncorrect,
 
-    onAdvance: () => setActiveIndex((c) => c + 1),
+    onAdvance: () => {
+      setIsTransitioning(true);
+      setPendingIndex((prev) =>
+        prev === null ? activeIndex + 1 : prev + 1
+      );
+    },
 
     onPersistCorrect: (id: number) => upsertChallengeProgress(id),
     onPersistWrong: (id: number) => upsertChallengeProgress(id),
@@ -193,7 +218,11 @@ export const Quiz = ({
           />
         </div>
 
-        <div className="flex items-center justify-center">
+        <div
+          className={`flex items-center justify-center transition-all duration-200 ${
+            isTransitioning ? "opacity-0 scale-95" : "opacity-100 scale-100"
+          }`}
+        >
           <div className="w-full max-w-180 flex flex-col gap-y-12">
             <div className="flex flex-col gap-y-8 text-center">
               <div className="flex flex-col gap-y-2">
@@ -248,6 +277,7 @@ export const Quiz = ({
         <Footer
           disabled={
             isPending ||
+            isTransitioning ||
             (challenge.type === "MULTI_SELECT"
               ? selectedOptions.length === 0
               : !selectedOption)
