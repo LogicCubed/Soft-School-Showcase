@@ -3,15 +3,16 @@
 import db from "@/db";
 import { getCourseById, getUserProgress } from "@/db/queries";
 import { userProgress } from "@/db/schema";
-import { auth } from "@clerk/nextjs/server";
+import { auth, currentUser } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { eq } from "drizzle-orm";
 
 export const upsertUserProgress = async (courseId: number) => {
     const { userId } = await auth();
+    const user = await currentUser();
 
-    if (!userId) {
+    if (!userId || !user) {
         throw new Error("Unauthorized");
     }
 
@@ -32,16 +33,16 @@ export const upsertUserProgress = async (courseId: number) => {
             .update(userProgress)
             .set({
                 activeCourseId: courseId,
-                userName: "User",
-                userImageSrc: "/softy-assets/softyhappy.svg",
+                userName: user.firstName || "User",
+                userImageSrc: user.imageUrl || "/softy-assets/softyhappy.svg",
             })
             .where(eq(userProgress.userId, userId));
     } else {
         await db.insert(userProgress).values({
             userId,
             activeCourseId: courseId,
-            userName: "User",
-            userImageSrc: "/softy-assets/softyhappy.svg",
+            userName: user.firstName || "User",
+            userImageSrc: user.imageUrl || "/softy-assets/softyhappy.svg",
         });
     }
 
