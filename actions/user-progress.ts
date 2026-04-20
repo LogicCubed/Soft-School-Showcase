@@ -3,13 +3,16 @@
 import db from "@/db";
 import { getCourseById, getUserProgress } from "@/db/queries";
 import { userProgress } from "@/db/schema";
-import { auth, currentUser } from "@clerk/nextjs/server";
+import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { eq } from "drizzle-orm";
 
 export const upsertUserProgress = async (courseId: number) => {
     const { userId } = await auth();
+
+    // TEMP SAFETY FIX
+    if (!userId) return;
 
     const course = await getCourseById(courseId);
 
@@ -31,13 +34,13 @@ export const upsertUserProgress = async (courseId: number) => {
                 userName: "User",
                 userImageSrc: "/softy-assets/softyhappy.svg",
             })
-            .where(eq(userProgress.userId, userId));
+            .where(eq(userProgress.userId, userId)); // now safe
     } else {
         await db.insert(userProgress).values({
             userId,
             activeCourseId: courseId,
-            userName: user.firstName || "User",
-            userImageSrc: user.imageUrl || "/softy-assets/softyhappy.svg",
+            userName: "User",
+            userImageSrc: "/softy-assets/softyhappy.svg",
         });
     }
 
