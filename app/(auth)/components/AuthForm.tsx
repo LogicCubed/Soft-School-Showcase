@@ -76,7 +76,7 @@ export const AuthForm = ({ type }: AuthFormProps) => {
 
             {/* Google Button */}
             <Button
-              variant="secondary"
+              variant="default"
               onClick={() => {
                 window.location.href = "/api/auth/google";
               }}
@@ -208,7 +208,7 @@ export const AuthForm = ({ type }: AuthFormProps) => {
           >
             <Button
               variant="primary"
-              className="w-full py-3 mt-2 cursor-pointer"
+              className="w-full py-3 mt-2 cursor-pointer text-white"
               disabled={loading}
               onClick={async () => {
                 if (type === "register") {
