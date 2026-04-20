@@ -11,8 +11,11 @@ import { eq } from "drizzle-orm";
 export const upsertUserProgress = async (courseId: number) => {
     const { userId } = await auth();
 
-    // TEMP SAFETY FIX
-    if (!userId) return;
+    // ✅ TEMP SAFE GUARD (prevents build crash)
+    if (!userId) {
+        console.log("No userId (unauthenticated request)");
+        return;
+    }
 
     const course = await getCourseById(courseId);
 
@@ -26,21 +29,24 @@ export const upsertUserProgress = async (courseId: number) => {
 
     const existingUserProgress = await getUserProgress();
 
+    const safeUserName = "User";
+    const safeUserImage = "/softy-assets/softyhappy.svg";
+
     if (existingUserProgress) {
         await db
             .update(userProgress)
             .set({
                 activeCourseId: courseId,
-                userName: "User",
-                userImageSrc: "/softy-assets/softyhappy.svg",
+                userName: safeUserName,
+                userImageSrc: safeUserImage,
             })
-            .where(eq(userProgress.userId, userId)); // now safe
+            .where(eq(userProgress.userId, userId));
     } else {
         await db.insert(userProgress).values({
             userId,
             activeCourseId: courseId,
-            userName: "User",
-            userImageSrc: "/softy-assets/softyhappy.svg",
+            userName: safeUserName,
+            userImageSrc: safeUserImage,
         });
     }
 
