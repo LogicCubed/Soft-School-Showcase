@@ -224,7 +224,8 @@ export const AuthForm = ({ type }: AuthFormProps) => {
                 setLoading(true);
                 try {
                   if (type === "login") {
-                    const res = await login(email, password)
+                    const res = await login(email, password);
+
                     if (res?.status === "complete") {
                       router.push("/learn");
                     } else {
@@ -252,6 +253,8 @@ export const AuthForm = ({ type }: AuthFormProps) => {
                       }
                     }
                   }
+                } catch (err: any) {
+                  setError("Something went wrong. Please try again.");
                 } finally {
                   setLoading(false);
                 }
