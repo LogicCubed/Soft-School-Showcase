@@ -12,6 +12,7 @@ import { Eye, EyeOff } from "lucide-react";
 import { PasswordStrength } from "./PasswordStrength";
 import { getPasswordStrength } from "@/lib/auth-utils";
 import { ForgotPasswordModal } from "./ForgotPasswordModal";
+import { useSignIn } from "@clerk/nextjs";
 
 interface AuthFormProps {
   type: "login" | "register";
@@ -38,6 +39,8 @@ export const AuthForm = ({ type }: AuthFormProps) => {
   const [error, setError] = useState<string | null>(null);
   const [code, setCode] = useState("");
   const [step, setStep] = useState<"form" | "verify">("form");
+
+  const { signIn, isLoaded: signInLoaded } = useSignIn();
 
   if (!signUpLoaded || !signUp) return null;
 
@@ -77,8 +80,14 @@ export const AuthForm = ({ type }: AuthFormProps) => {
             {/* Google Button */}
             <Button
               variant="default"
-              onClick={() => {
-                window.location.href = "/api/auth/google";
+              onClick={async () => {
+                if (!signInLoaded) return;
+
+                await signIn.authenticateWithRedirect({
+                  strategy: "oauth_google",
+                  redirectUrl: "/sso-callback",
+                  redirectUrlComplete: "/learn",
+                });
               }}
               className="flex items-center justify-center w-12 h-12 bg-white rounded-lg border border-slate-200 cursor-pointer transition-all duration-150"
             >
