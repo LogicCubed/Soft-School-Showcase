@@ -204,7 +204,7 @@ export const Quiz = ({
         isSpeaking={isSpeaking}
       />
 
-      <div className="flex-1 grid grid-cols-[30%_40%_30%] overflow-hidden">
+      <div className="flex-1 grid grid-cols-1 lg:grid-cols-[30%_40%_30%] overflow-hidden">
         <div className="flex items-center justify-end pr-6">
           <Assistant
             id={lessonAssistant}
@@ -223,7 +223,7 @@ export const Quiz = ({
             isTransitioning ? "opacity-0 scale-95" : "opacity-100 scale-100"
           }`}
         >
-          <div className="w-full max-w-180 flex flex-col gap-y-12">
+          <div className="w-full max-w-180 mx-auto flex flex-col gap-y-12 px-4 lg:px-0">
             <div className="flex flex-col gap-y-8 text-center">
               <div className="flex flex-col gap-y-2">
                 <h1 className="text-lg lg:text-3xl font-bold text-neutral-700">

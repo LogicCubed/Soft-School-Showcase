@@ -57,9 +57,9 @@ export const Assistant = ({
   }, [next, showBubble]);
 
   return (
-    <div className="relative flex items-center justify-center w-full h-full overflow-visible">
+    <div className="relative flex items-center justify-center w-full h-full overflow-visible scale-75 lg:scale-100 translate-y-6 lg:translate-y-0">
 
-      <div className="absolute bottom-32 w-35 h-35 z-0 pointer-events-none">
+      <div className="hidden lg:block absolute bottom-32 w-35 h-35 z-0 pointer-events-none">
         <Image
           src="/assets/ui/podium.svg"
           alt="podium"

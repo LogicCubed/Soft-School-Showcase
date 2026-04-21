@@ -78,16 +78,9 @@ export const ResultCard = ({ totalPoints, accuracy, sessionTime }: ResultCardPro
         <Image
           src="/assets/characters/softy/softy.svg"
           alt="Finish"
-          height={100}
-          width={100}
-          className="hidden lg:block"
-        />
-        <Image
-          src="/assets/characters/softy/softy.svg"
-          alt="Finish"
-          height={50}
-          width={50}
-          className="block lg:hidden"
+          width={200}
+          height={200}
+          className="h-35 w-35 lg:h-55 lg:w-55"
         />
 
         <h1 className="text-xl lg:text-3xl font-bold text-slate-600">

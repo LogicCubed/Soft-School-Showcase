@@ -25,7 +25,7 @@ export const Header = ({
   const { open: openSettingsModal } = useSettingsModal();
 
   return (
-    <header className="lg:pt-12.5 pt-5 px-10 flex gap-x-7 items-center justify-between max-w-285 mx-auto w-full">
+    <header className="lg:pt-12.5 pt-5 px-4 lg:px-10 flex gap-x-3 lg:gap-x-7 items-center justify-between max-w-285 mx-auto w-full">
       
       {/* LEFT */}
       <X
