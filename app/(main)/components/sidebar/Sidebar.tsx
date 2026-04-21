@@ -83,7 +83,7 @@ export const Sidebar = ({ className, isAdmin }: Props) => {
               </Avatar>
             ) : (
               <Image
-                src="/assets/icons/profile.svg"
+                src="/assets/icons/profile.png"
                 alt="Profile"
                 width={32}
                 height={32}
