@@ -8,13 +8,13 @@ import {
   UserPlus,
   TrendingDown,
 } from "lucide-react";
-import KpiCard from "../../components/KPICard";
-import RevenueChart from "../../components/RevenueChart";
-import RecentActivity from "../../components/RecentActivity";
+import KpiCard from "../components/KPICard";
+import RevenueChart from "../components/RevenueChart";
+import RecentActivity from "../components/RecentActivity";
 import { useUser } from "@clerk/nextjs";
 import dynamic from "next/dynamic";
 
-const Map = dynamic(() => import("../../components/Map"), {
+const Map = dynamic(() => import("../components/Map"), {
   ssr: false,
 });
 
