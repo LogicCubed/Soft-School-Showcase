@@ -12,7 +12,7 @@ import { Eye, EyeOff } from "lucide-react";
 import { PasswordStrength } from "./PasswordStrength";
 import { getPasswordStrength } from "@/lib/auth-utils";
 import { ForgotPasswordModal } from "./ForgotPasswordModal";
-import { useSignIn } from "@clerk/nextjs";
+import { useSignIn, useClerk } from "@clerk/nextjs";
 
 interface AuthFormProps {
   type: "login" | "register";
@@ -22,6 +22,7 @@ export const AuthForm = ({ type }: AuthFormProps) => {
   const { signUp, isLoaded: signUpLoaded } = useSignUp();
 
   const router = useRouter();
+  const { setActive } = useClerk();
 
   const { login, register } = useAuth();
 
@@ -39,9 +40,12 @@ export const AuthForm = ({ type }: AuthFormProps) => {
   const [error, setError] = useState<string | null>(null);
   const [code, setCode] = useState("");
   const [step, setStep] = useState<"form" | "verify">("form");
+  const [info, setInfo] = useState<string | null>(null);
 
   const { signIn, isLoaded: signInLoaded } = useSignIn();
 
+  if (!signInLoaded || !signIn) return null;
+  
   if (!signUpLoaded || !signUp) return null;
 
   return (
@@ -52,8 +56,8 @@ export const AuthForm = ({ type }: AuthFormProps) => {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -30 }}
-          transition={{ type: "spring" as const, stiffness: 200, damping: 20 }}
-          className="w-full max-w-md p-8 flex flex-col gap-6"
+          transition={{ duration: 0.2, ease: "easeOut" }}
+          className="w-full max-w-md p-8 flex flex-col gap-4"
         >
           {/* Logo */}
           <motion.div
@@ -81,8 +85,6 @@ export const AuthForm = ({ type }: AuthFormProps) => {
             <Button
               variant="default"
               onClick={async () => {
-                if (!signInLoaded) return;
-
                 await signIn.authenticateWithRedirect({
                   strategy: "oauth_google",
                   redirectUrl: "/sso-callback",
@@ -197,8 +199,22 @@ export const AuthForm = ({ type }: AuthFormProps) => {
             </motion.div>
           )}
 
-          {/* Error Message */}
-          {error && <p className="text-red-400 text-sm font-semibold">{error}</p>}
+          <AnimatePresence initial={false}>
+            {(info || error) && (
+              <motion.div
+                key={info ? "info" : "error"}
+                initial={{ opacity: 0, y: -4 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -4 }}
+                transition={{ duration: 0.15 }}
+                className="text-sm font-semibold"
+              >
+                <p className={info ? "text-sky-400" : "text-red-400"}>
+                  {info || error}
+                </p>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           {step === "verify" && (
             <input
@@ -216,54 +232,96 @@ export const AuthForm = ({ type }: AuthFormProps) => {
             transition={{ type: "spring" as const, stiffness: 200, damping: 18, delay: 0.4 }}
           >
             <Button
+              type="button"
               variant="primary"
               className="w-full py-3 mt-2 cursor-pointer text-white"
               disabled={loading}
               onClick={async () => {
-                if (type === "register") {
-                  if (!firstName || !lastName || !email || !password) {
-                    setError("All fields are Required");
-                    setLoading(false);
+                setError(null);
+                setInfo(null);
+
+                const normalizedEmail = email.trim().toLowerCase();
+
+                if (step === "form" && (!email || !password)) {
+                  setError("Email and password are required");
+                  return;
+                }
+
+                if (type === "register" && step === "form") {
+                  if (!firstName || !lastName) {
+                    setError("All fields are required");
                     return;
                   }
                 }
-                if (type === "register" && step === "verify" && !code) return;
-                if (!email || !password) return;
+
+                if (type === "register" && step === "verify" && !code) {
+                  setError("Verification code is required");
+                  return;
+                }
 
                 setLoading(true);
                 try {
                   if (type === "login") {
-                    const res = await login(email, password);
+                    if (!signIn) return;
+
+                    const res = await signIn.create({
+                      identifier: normalizedEmail,
+                      password,
+                    });
 
                     if (res?.status === "complete") {
+                      const sessionId = res.createdSessionId;
+                      if (!sessionId) return;
+
+                      await setActive({
+                        session: sessionId,
+                      });
+
                       router.push("/learn");
-                    } else {
-                      setError("Login failed");
                     }
                   } else {
                     if (step === "form") {
                       if (getPasswordStrength(password) < 2) {
                         setError("Password is Too Weak");
-                        setLoading(false);
                         return;
                       }
 
-                      const res = await register(email, password, firstName, lastName);
+                      const res = await register(normalizedEmail, password, firstName, lastName);
                       if (res?.status === "missing_requirements") {
                         setStep("verify");
+                        setInfo("A verification code has been sent to your email address");
                       }
                     } else {
                       const res = await signUp?.attemptEmailAddressVerification({ code });
 
-                      if (res?.status === "complete") {
-                        router.push("/learn");
-                      } else {
-                        setError("Invalid code");
-                      }
+                      setError("Incorrect verification code");
                     }
                   }
                 } catch (err: any) {
-                  setError("Something went wrong. Please try again.");
+                  const code = err?.errors?.[0]?.code;
+
+                  if (type === "login") {
+                    if (code === "form_identifier_not_found") {
+                      setError("Account not found");
+                    } else if (code === "form_password_incorrect") {
+                      setError("Incorrect password");
+                    } else if (
+                      code === "strategy_for_user_invalid" ||
+                      code === "strategy_for_account_not_supported"
+                    ) {
+                      setError("This account uses Google sign-in. Continue with Google.");
+                    } else if (code === "too_many_requests") {
+                      setError("Too many attempts. Try again later.");
+                    } else {
+                      setError("Unable to sign in. Try Google instead.");
+                    }
+                  } else {
+                    if (code === "form_identifier_exists") {
+                      setError("Account already exists");
+                    } else {
+                      setError("Something went wrong. Please try again.");
+                    }
+                  }
                 } finally {
                   setLoading(false);
                 }
