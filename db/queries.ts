@@ -174,17 +174,18 @@ export const getCourseProgress = cache(async () => {
 export const getLesson = cache(async (id?: number) => {
     const { userId } = await auth();
 
-    if (!userId) {
-        return null;
+    if (!userId) return null;
+
+    let lessonId: number | undefined;
+
+    if (id) {
+        lessonId = id;
+    } else {
+        const courseProgress = await getCourseProgress();
+        lessonId = courseProgress?.activeLessonId;
     }
 
-    const courseProgress = await getCourseProgress();
-
-    const lessonId = id || courseProgress?.activeLessonId;
-
-    if (!lessonId) {
-        return null;
-    }
+    if (!lessonId) return null;
 
     const data = await db.query.lessons.findFirst({
         where: eq(lessons.id, lessonId),
@@ -201,19 +202,17 @@ export const getLesson = cache(async (id?: number) => {
         },
     });
 
-    if (!data || !data.challenges) {
-        return null;
-    }
+    if (!data) return null;
 
     const normalizedChallenges = data.challenges.map((challenge) => {
-        const completed = challenge.challengeProgress
-        && challenge.challengeProgress.length > 0
-        && challenge.challengeProgress.every((progress) => progress.completed)
+        const completed =
+            challenge.challengeProgress?.length > 0 &&
+            challenge.challengeProgress.every((p) => p.completed);
 
         return { ...challenge, completed };
     });
 
-    return { ...data, challenges: normalizedChallenges }
+    return { ...data, challenges: normalizedChallenges };
 });
 
 // Calculates the completion percentage of the active lesson based on completed challenges.
@@ -240,6 +239,37 @@ export const getLessonPercentage = cache(async () => {
 
     return percentage;
 })
+
+// Computes the percentage of completed challenges for a given course and user.
+// Traverses units → lessons → challenges and joins user challenge progress.
+// Returns a value from 0–100 representing overall course completion.
+
+export const getCourseProgressPercentage = async (courseId: number) => {
+    const { userId } = await auth();
+
+    if (!userId) return 0;
+
+    const rows = await db
+        .select({
+            completed: challengeProgress.completed,
+        })
+        .from(units)
+        .innerJoin(lessons, eq(lessons.unitId, units.id))
+        .innerJoin(challenges, eq(challenges.lessonId, lessons.id))
+        .leftJoin(
+            challengeProgress,
+            eq(challengeProgress.challengeId, challenges.id)
+        )
+        .where(eq(units.courseId, courseId));
+
+    const total = rows.length;
+
+    const completed = rows.filter((r) => r.completed === true).length;
+
+    if (total === 0) return 0;
+
+    return Math.round((completed / total) * 100);
+};
 
 // Fetches the top 10 users based on points, ordered descendingly.
 // Includes userId, userName, userImageSrc, and points.

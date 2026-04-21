@@ -9,6 +9,8 @@ import Leaderboard from "../components/Leaderboard";
 import { BackToTop } from "../components/BackToTop";
 import { Unit } from "./Unit";
 import { getCourseProgress, getLessonPercentage, getUnits, getUserProgress } from "@/db/queries";
+import { Header } from "./Header";
+import { StatsBar } from "./StatsBar";
 
 const LearnPage = async () => {
   const userProgressData = getUserProgress();
@@ -27,6 +29,10 @@ const LearnPage = async () => {
     redirect("/courses");
   }
 
+  if (!userProgress || !userProgress.activeCourse) {
+    redirect("/courses");
+  }
+
   if (!courseProgress) {
     redirect("/courses");
   }
@@ -35,12 +41,14 @@ const LearnPage = async () => {
     <>
       <div className="flex flex-row-reverse gap-12 px-6">
         <StickyWrapper>
+          <StatsBar />
           <Leaderboard />
           <StickyFooter />
         </StickyWrapper>
 
         <FeedWrapper>
           <main>
+            <Header title={userProgress.activeCourse.title} />
             {(units ?? []).map((unit) => (
               <section key={unit.id} className="mb-10 relative">
                 <Unit

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSignIn } from "@clerk/nextjs";
 import { Button } from "components/ui/button";
+import { Eye, EyeOff } from "lucide-react";
 
 interface ForgotPasswordModalProps {
   open: boolean;
@@ -21,6 +22,8 @@ export const ForgotPasswordModal = ({
   const [password, setPassword] = useState("");
   const [step, setStep] = useState<"email" | "verify" | "reset">("email");
 
+  const [showPassword, setShowPassword] = useState(false);
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -37,8 +40,14 @@ export const ForgotPasswordModal = ({
       });
 
       setStep("verify");
-    } catch {
-      setError("Unable to send code");
+    } catch (err: any) {
+      const code = err?.errors?.[0]?.code;
+
+      if (code === "form_identifier_not_found") {
+        setError("No account found with this email");
+      } else {
+        setError("Unable to send code");
+      }
     } finally {
       setLoading(false);
     }
@@ -57,8 +66,14 @@ export const ForgotPasswordModal = ({
       });
 
       setStep("reset");
-    } catch {
-      setError("Invalid code");
+    } catch (err: any) {
+      const code = err?.errors?.[0]?.code;
+
+      if (code === "verification_failed") {
+        setError("Verification code is incorrect or expired");
+      } else {
+        setError("Invalid code");
+      }
     } finally {
       setLoading(false);
     }
@@ -76,8 +91,18 @@ export const ForgotPasswordModal = ({
       });
 
       onClose();
-    } catch {
-      setError("Failed to reset password");
+    } catch (err: any) {
+      const code = err?.errors?.[0]?.code;
+
+      if (code === "form_password_pwned") {
+        setError("Password was found in a data breach");
+      } else if (code === "form_password_too_short") {
+        setError("Password is too short");
+      } else if (code === "form_password_incorrect") {
+        setError("Password is invalid");
+      } else {
+        setError("Unable to set new password");
+      }
     } finally {
       setLoading(false);
     }
@@ -152,15 +177,25 @@ export const ForgotPasswordModal = ({
               <>
                 <h2 className="text-xl font-bold text-slate-400">New Password</h2>
 
-                <input
-                    type="password"
+                <div className="relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
                     placeholder="New Password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-slate-900 placeholder:text-slate-400
+                    className="w-full rounded-lg border border-slate-200 bg-white px-4 py-3 pr-10 text-slate-900 placeholder:text-slate-400
                     focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-sky-400
                     transition-all duration-200"
-                />
+                  />
+
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((p) => !p)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
+                  >
+                    {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                  </button>
+                </div>
 
                 {error && <p className="text-red-400 text-sm">{error}</p>}
 

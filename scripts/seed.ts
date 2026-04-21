@@ -54,14 +54,12 @@ const main = async () => {
     ]);
 
     await db.insert(schema.lessons).values([
-      // Unit 1
       { id: 1, unitId: 1, order: 1, title: "Lesson 1", lessonAssistant: "softy" },
       { id: 2, unitId: 1, order: 2, title: "Lesson 2", lessonAssistant: "softy" },
       { id: 3, unitId: 1, order: 3, title: "Lesson 3", lessonAssistant: "softy" },
       { id: 4, unitId: 1, order: 4, title: "Lesson 4", lessonAssistant: "softy" },
       { id: 5, unitId: 1, order: 5, title: "Lesson 5", lessonAssistant: "softy" },
 
-      // Unit 2
       { id: 6, unitId: 2, order: 1, title: "Lesson 1", lessonAssistant: "softy" },
       { id: 7, unitId: 2, order: 2, title: "Lesson 2", lessonAssistant: "softy" },
       { id: 8, unitId: 2, order: 3, title: "Lesson 3", lessonAssistant: "softy" },
@@ -78,16 +76,18 @@ const main = async () => {
         question: "A friend is upset. What do you do?",
         callToAction: "Pick the best response",
         hint: "Think about emotional validation first.",
+        explanation: "Emotional validation builds trust.",
         questionImage: null,
       },
       {
         id: 2,
         lessonId: 1,
-        type: "MULTIPLE_CHOICE",
+        type: "TRUE_FALSE",
         order: 2,
-        question: "Someone is stressed with work. What helps?",
-        callToAction: "Pick the best response",
-        hint: "Break problems into smaller steps.",
+        question: "You should interrupt someone when they are expressing frustration.",
+        callToAction: "Select True or False",
+        hint: "Think about active listening.",
+        explanation: "Interrupting reduces trust and prevents emotional validation.",
         questionImage: null,
       },
       {
@@ -98,123 +98,239 @@ const main = async () => {
         question: "A teammate made a mistake. What is best?",
         callToAction: "Pick the best response",
         hint: "Focus on solution, not blame.",
+        explanation: "Focusing on solutions builds accountability without conflict.",
         questionImage: null,
       },
       {
         id: 4,
         lessonId: 1,
-        type: "MULTIPLE_CHOICE",
+        type: "TRUE_FALSE",
         order: 4,
-        question: "Someone feels left out. What do you do?",
+        question: "Ignoring a teammate’s mistake is the best way to maintain harmony.",
+        callToAction: "Select True or False",
+        hint: "Think about long-term team performance.",
+        explanation: "Ignoring mistakes reduces growth and creates repeated issues.",
+        questionImage: null,
+      },
+      {
+        id: 5,
+        lessonId: 2,
+        type: "MULTIPLE_CHOICE",
+        order: 1,
+        question: "A coworker disagrees with you. What is best?",
         callToAction: "Pick the best response",
-        hint: "Inclusion is the priority.",
+        hint: "Focus on understanding before responding.",
+        explanation: "Understanding before responding reduces conflict.",
+        questionImage: null,
+      },
+
+      // NEW MULTI_SELECT CHALLENGES
+      {
+        id: 6,
+        lessonId: 1,
+        type: "MULTIPLE_CHOICE",
+        order: 5,
+        question: "A teammate misses a deadline. What is the best response?",
+        callToAction: "Pick the best response",
+        hint: "Focus on clarity and support, not blame.",
+        explanation: "Addressing the cause while offering support improves future performance.",
+        questionImage: null,
+      },
+      {
+        id: 7,
+        lessonId: 1,
+        type: "TRUE_FALSE",
+        order: 6,
+        question: "Giving feedback should focus only on what went wrong.",
+        callToAction: "Select True or False",
+        hint: "Think about balanced feedback.",
+        explanation: "Effective feedback includes both strengths and improvements.",
+        questionImage: null,
+      },
+      {
+        id: 8,
+        lessonId: 1,
+        type: "MULTI_SELECT",
+        order: 7,
+        question: "Which actions help de-escalate conflict?",
+        callToAction: "Select all that apply",
+        hint: "Think calm, not reactive responses.",
+        explanation: "De-escalation comes from calm tone, listening, and validating feelings.",
+        questionImage: null,
+      },
+      {
+        id: 9,
+        lessonId: 1,
+        type: "MULTI_SELECT",
+        order: 8,
+        question: "Which behaviors damage team trust?",
+        callToAction: "Select all that apply",
+        hint: "Think long-term impact on relationships.",
+        explanation: "Blame, ignoring issues, and public shaming reduce trust.",
         questionImage: null,
       },
     ]);
 
     await db.insert(schema.challengeOptions).values([
-      // Challenge 1 (4 options)
       {
         challengeId: 1,
         correct: true,
         text: "Listen and ask how they feel",
-        explanation: "Emotional validation builds trust.",
       },
       {
         challengeId: 1,
         correct: false,
         text: "Tell them to calm down",
-        explanation: "Dismisses emotions.",
       },
       {
         challengeId: 1,
         correct: false,
         text: "Ignore them",
-        explanation: "Avoids the problem.",
       },
       {
         challengeId: 1,
         correct: false,
         text: "Change the subject",
-        explanation: "Avoids emotional support.",
       },
 
-      // Challenge 2
+      {
+        challengeId: 2,
+        correct: false,
+        text: "True",
+      },
       {
         challengeId: 2,
         correct: true,
-        text: "Help them break it into steps",
-        explanation: "Reduces overwhelm.",
-      },
-      {
-        challengeId: 2,
-        correct: false,
-        text: "Tell them to hurry up",
-        explanation: "Increases stress.",
-      },
-      {
-        challengeId: 2,
-        correct: false,
-        text: "Do it for them immediately",
-        explanation: "Removes learning opportunity.",
-      },
-      {
-        challengeId: 2,
-        correct: false,
-        text: "Ignore the situation",
-        explanation: "No support provided.",
+        text: "False",
       },
 
-      // Challenge 3
       {
         challengeId: 3,
         correct: true,
         text: "Help fix the issue calmly",
-        explanation: "Encourages problem solving.",
       },
       {
         challengeId: 3,
         correct: false,
         text: "Blame them",
-        explanation: "Creates conflict.",
       },
       {
         challengeId: 3,
         correct: false,
         text: "Publicly call them out",
-        explanation: "Damages trust.",
       },
       {
         challengeId: 3,
         correct: false,
         text: "Ignore the mistake",
-        explanation: "Misses correction opportunity.",
       },
 
-      // Challenge 4
+      {
+        challengeId: 4,
+        correct: false,
+        text: "True",
+      },
       {
         challengeId: 4,
         correct: true,
-        text: "Invite them to join your group",
-        explanation: "Promotes inclusion.",
+        text: "False",
+      },
+
+      {
+        challengeId: 5,
+        correct: true,
+        text: "Listen to their perspective and respond calmly",
       },
       {
-        challengeId: 4,
+        challengeId: 5,
         correct: false,
-        text: "Do nothing",
-        explanation: "Passive exclusion.",
+        text: "Immediately defend your position",
       },
       {
-        challengeId: 4,
+        challengeId: 5,
         correct: false,
-        text: "Tell them it's not your problem",
-        explanation: "Dismissive behavior.",
+        text: "Ignore their opinion",
       },
       {
-        challengeId: 4,
+        challengeId: 5,
         correct: false,
-        text: "Avoid them",
-        explanation: "Reinforces isolation.",
+        text: "End the conversation",
+      },
+
+      {
+        challengeId: 6,
+        correct: true,
+        text: "Ask what caused the delay and help plan next steps",
+      },
+      {
+        challengeId: 6,
+        correct: false,
+        text: "Ignore it and move on",
+      },
+      {
+        challengeId: 6,
+        correct: false,
+        text: "Blame them for being unprofessional",
+      },
+      {
+        challengeId: 6,
+        correct: false,
+        text: "Report them immediately without discussion",
+      },
+
+      {
+        challengeId: 7,
+        correct: false,
+        text: "True",
+      },
+      {
+        challengeId: 7,
+        correct: true,
+        text: "False",
+      },
+
+      // MULTI_SELECT 8
+      {
+        challengeId: 8,
+        correct: true,
+        text: "Listening without interrupting",
+      },
+      {
+        challengeId: 8,
+        correct: true,
+        text: "Validating emotions",
+      },
+      {
+        challengeId: 8,
+        correct: true,
+        text: "Using calm tone",
+      },
+      {
+        challengeId: 8,
+        correct: false,
+        text: "Raising your voice",
+      },
+
+      // MULTI_SELECT 9
+      {
+        challengeId: 9,
+        correct: true,
+        text: "Blaming teammates publicly",
+      },
+      {
+        challengeId: 9,
+        correct: true,
+        text: "Ignoring repeated issues",
+      },
+      {
+        challengeId: 9,
+        correct: true,
+        text: "Shaming others in meetings",
+      },
+      {
+        challengeId: 9,
+        correct: false,
+        text: "Giving private constructive feedback",
       },
     ]);
 

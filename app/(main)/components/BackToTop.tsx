@@ -36,7 +36,7 @@ export function BackToTop() {
         `}
         style={{ transformOrigin: "center" }}
       >
-        <ArrowUp className="w-8 h-8 stroke-6" size={32} />
+        <ArrowUp className="w-16 h-16 stroke-6 text-white" size={32} />
       </Button>
     </div>
   );

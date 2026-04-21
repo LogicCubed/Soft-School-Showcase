@@ -10,6 +10,7 @@ type Course = {
   id: number;
   title: string;
   imageSrc: string;
+  progress: number;
 };
 
 type Props = {
@@ -46,6 +47,7 @@ export const List = ({ courses, activeCourseId }: Props) => {
           onClick={onClick}
           disabled={pending}
           active={course.id === activeCourseId}
+          progress={course.progress}
         />
       ))}
     </div>

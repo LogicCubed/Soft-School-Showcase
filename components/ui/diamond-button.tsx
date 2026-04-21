@@ -48,7 +48,7 @@ export function DiamondButton({
         )}
       >
         <div className="-rotate-45 flex flex-col items-center justify-center">
-          {Icon && <Icon className="w-12 h-12" strokeWidth={2} />}
+          {Icon && <Icon className="w-16 h-16" strokeWidth={2.5} />}
         </div>
       </div>
     </button>

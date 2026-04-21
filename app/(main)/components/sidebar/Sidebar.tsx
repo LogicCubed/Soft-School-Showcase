@@ -18,7 +18,7 @@ export const Sidebar = ({ className, isAdmin }: Props) => {
   return (
     <div
       className={cn(
-        "flex h-full lg:w-[256px] lg:fixed left-0 top-0 px-4 bg-[#0e0d12] flex-col",
+        "flex h-full lg:w-[256px] lg:fixed left-0 top-0 px-4 bg-white border-r-2 border-slate-400 flex-col",
         className
       )}
     >
@@ -83,7 +83,7 @@ export const Sidebar = ({ className, isAdmin }: Props) => {
               </Avatar>
             ) : (
               <Image
-                src="/assets/icons/profile.svg"
+                src="/assets/icons/profile.png"
                 alt="Profile"
                 width={32}
                 height={32}

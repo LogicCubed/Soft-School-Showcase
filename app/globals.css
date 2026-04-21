@@ -3,7 +3,16 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --border: #e5e5e5;
 }
+
+.dark {
+  --background: #131118;
+  --foreground: #ededed;
+  --border: #2a2a2a;
+}
+
+@import "leaflet/dist/leaflet.css";
 
 @theme inline {
   --color-background: var(--background);
@@ -12,25 +21,101 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-baloo), cursive;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: scale(0.98); }
-  to { opacity: 1; transform: scale(1); }
+@keyframes floatY {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
 }
 
-@keyframes fadeOut {
-  from { opacity: 1; transform: scale(1); }
-  to { opacity: 0; transform: scale(0.98); }
+.animate-float {
+  animation: floatY 3s ease-in-out infinite;
+}
+
+@keyframes letterPop {
+  0% {
+    transform: translateY(12px) scale(0.7);
+    opacity: 0;
+  }
+  60% {
+    transform: translateY(-4px) scale(1.2);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(0px) scale(1);
+    opacity: 1;
+  }
+}
+
+.letter-pop {
+  display: inline-block;
+  animation-name: letterPop;
+  animation-duration: 450ms;
+  animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+  animation-fill-mode: both;
+}
+
+@keyframes streakPop {
+  0% {
+    transform: translate(-50%, -120%) scale(0.6);
+    opacity: 0;
+  }
+  60% {
+    transform: translate(-50%, -140%) scale(1.25);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -100%) scale(1);
+    opacity: 1;
+  }
+}
+
+.streak-pop {
+  display: inline-block;
+  animation: streakPop 420ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+@keyframes scaleInFromBottom {
+  0% {
+    transform: scale(0) translateY(10px);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.05) translateY(0);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1) translateY(0);
+  }
+}
+
+.scale-in-bottom {
+  transform-origin: bottom center;
+  animation: scaleInFromBottom 250ms ease-out;
+}
+
+@keyframes streakParticle {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(60px, -40px) scale(0.2);
+    opacity: 0;
+  }
+}
+
+.streak-particle {
+  animation: streakParticle 700ms ease-out forwards;
 }

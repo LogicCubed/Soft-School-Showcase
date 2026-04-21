@@ -26,8 +26,8 @@ export const FeatureCard = ({
 
       {/* Text */}
       <div className="md:w-1/2 text-center md:text-left">
-        <h2 className="text-4xl font-extrabold mb-4">{title}</h2>
-        <p className="text-lg">{text}</p>
+        <h2 className="text-4xl text-white font-extrabold mb-4">{title}</h2>
+        <p className="text-lg font-semibold text-white">{text}</p>
       </div>
     </div>
   );

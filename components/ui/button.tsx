@@ -1,39 +1,56 @@
-import * as React from "react"
-import { Slot } from "@radix-ui/react-slot"
-import { cva, type VariantProps } from "class-variance-authority"
-import { cn } from "@/lib/utils"
+import * as React from "react";
+import { Slot } from "@radix-ui/react-slot";
+import { cva, type VariantProps } from "class-variance-authority";
+import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
   "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl text-sm font-bold transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive uppercase tracking-wide",
   {
     variants: {
       variant: {
-        locked: "bg-neutral-200 text-primary-foreground hover:bg-neutral-200/90 border-neutral-400 border-b-4 active:border-b-0",
-        default: "bg-white text-black border-slate-200 border-2 border-b-4 active:border-b-2 hover:bg-slate-100 text-slate-500",
-        primary: "bg-sky-400 text-primary-foreground hover:bg-sky-400/90 border-sky-500 border-b-4 active:border-b-0",
-        secondary: "bg-[#ff96bf] text-primary-foreground hover:bg-[#ff96bf]-400/90 border-[#e376a0] border-b-4 active:border-b-0",
-        danger: "bg-[#ff619e] text-primary-foreground hover:bg-[#ff3b6b]-400/90 border-[#e32b59] border-b-4 active:border-b-0",
-        dangerOutline: "bg-white text-[#ff619e] hover:bg-slate-100",
-        ghost: "bg-transparent text-slate-500 border-transparent border-0 hover:bg-slate-100/20",
-        sidebarDark: "bg-transparent text-slate-500 border-2 border-transparent hover:bg-slate-100/20 transition-none",
-        sidebarDarkActive: "bg-sky-500/15 text-sky-500 border-sky-300 border-2 hover:bg-sky-500/20 transition-none",
-        sidebarLight: "bg-transparent text-white/90 border-2 border-transparent hover:bg-white/15 hover:text-white",
-        sidebarLightActive: "bg-white/20 text-white border-white/30 border-2 hover:bg-white/25",
+        locked:
+          "bg-neutral-200 text-primary-foreground hover:bg-neutral-200/90 border-neutral-400 border-b-4 active:border-b-0",
+
+        default:
+          "bg-white text-slate-500 border-slate-200 border-2 border-b-4 active:border-b-2 hover:bg-slate-100 cursor-pointer",
+
+        primary:
+          "bg-sky-400 text-primary-foreground hover:bg-sky-400/90 border-sky-500 border-b-4 active:border-b-0 cursor-pointer",
+
+        secondary:
+          "bg-[#ff96bf] text-primary-foreground hover:bg-[#ff96bf]/90 border-[#e376a0] border-b-4 active:border-b-0 cursor-pointer",
+
+        danger:
+          "bg-[#ff619e] text-primary-foreground hover:bg-[#ff3b6b]/90 border-[#e32b59] border-2 border-b-4 active:border-b-2 cursor-pointer",
+
+        dangerOutline:
+          "bg-white text-[#ff619e] hover:bg-slate-100 cursor-pointer",
+
+        ghost:
+          "bg-transparent text-slate-500 border-transparent border-0 hover:bg-slate-100/20",
+
+        nav:
+          "bg-transparent border-2 border-transparent hover:bg-slate-100 dark:hover:bg-slate-100 transition-none",
+
+        navActive:
+          "bg-sky-500/15 border-sky-300 border-2 hover:bg-sky-500/20 transition-none",
       },
+
       size: {
         default: "h-11 px-4 py-2 has-[>svg]:px-3",
         sm: "h-8 gap-1.5 px-3 has-[>svg]:px-2.5",
         lg: "h-12 px-8 has-[>svg]:px-4",
-        icon: "size-9 w-10",
+        icon: "size-8 w-8",
         rounded: "rounded-full",
       },
     },
+
     defaultVariants: {
       variant: "default",
       size: "default",
     },
   }
-)
+);
 
 function Button({
   className,
@@ -43,9 +60,9 @@ function Button({
   ...props
 }: React.ComponentProps<"button"> &
   VariantProps<typeof buttonVariants> & {
-    asChild?: boolean
+    asChild?: boolean;
   }) {
-  const Comp = asChild ? Slot : "button"
+  const Comp = asChild ? Slot : "button";
 
   return (
     <Comp
@@ -53,7 +70,7 @@ function Button({
       className={cn(buttonVariants({ variant, size, className }))}
       {...props}
     />
-  )
+  );
 }
 
-export { Button, buttonVariants }
+export { Button, buttonVariants };

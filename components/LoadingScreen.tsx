@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useLoading } from "@/store/loadingStore";
-import { quotes } from "@/lib/quotes";
+import { quotes } from "@/lib/copy/quotes";
 
 export const LoadingScreen = () => {
   const isLoading = useLoading((s) => s.isLoading);
@@ -42,7 +42,7 @@ export const LoadingScreen = () => {
 
   return (
     <div
-      className={`fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-sky-400 transition-opacity duration-300 ${
+      className={`fixed inset-0 z-9999 flex flex-col items-center justify-center bg-sky-400 transition-opacity duration-300 ${
         visible ? "opacity-100" : "opacity-0"
       }`}
     >
