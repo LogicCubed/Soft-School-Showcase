@@ -12,6 +12,8 @@
   --border: #2a2a2a;
 }
 
+@import "leaflet/dist/leaflet.css";
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
