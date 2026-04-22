@@ -50,19 +50,25 @@ export const challengesEnum = pgEnum("type", [
     "MULTIPLE_CHOICE",
     "MULTI_SELECT",
     "TRUE_FALSE",
+    "VIDEO",
 ]);
 
 export const challenges = pgTable("challenges", {
     id: serial("id").primaryKey(),
-    lessonId: integer("lesson_id").references(() => lessons.id, { onDelete: "cascade" }).notNull(),
+    lessonId: integer("lesson_id")
+        .references(() => lessons.id, { onDelete: "cascade" })
+        .notNull(),
     type: challengesEnum("type").notNull(),
     order: integer("order").notNull(),
 
-    question: text("question").notNull(),
+    promptText: text("prompt_text"),
+    imageSrc: text("image_src"),
+    videoSrc: text("video_src"),
+    audioSrc: text("audio_src"),
+
     callToAction: text("call_to_action").notNull(),
     hint: text("hint").notNull(),
     explanation: text("explanation").notNull(),
-    questionImage: text("question_image"),
 });
 
 export const challengesRelations = relations(challenges, ({ one, many }) => ({

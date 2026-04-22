@@ -15,6 +15,13 @@
       "when": 1776470165612,
       "tag": "0001_bright_mongu",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1776761063314,
+      "tag": "0002_melodic_firebrand",
+      "breakpoints": true
     }
   ]
 }

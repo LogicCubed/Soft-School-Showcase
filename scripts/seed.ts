@@ -68,110 +68,65 @@ const main = async () => {
     ]);
 
     await db.insert(schema.challenges).values([
+      // 1. MULTIPLE CHOICE (4 options)
       {
         id: 1,
         lessonId: 1,
         type: "MULTIPLE_CHOICE",
         order: 1,
-        question: "A friend is upset. What do you do?",
+        promptText: "A friend is upset. What do you do?",
         callToAction: "Pick the best response",
-        hint: "Think about emotional validation first.",
-        explanation: "Emotional validation builds trust.",
-        questionImage: null,
+        hint: "Focus on emotional validation first.",
+        explanation: "Validation builds trust.",
+        imageSrc: null,
+        videoSrc: null,
       },
+
+      // 2. MULTI SELECT
       {
         id: 2,
         lessonId: 1,
-        type: "TRUE_FALSE",
+        type: "MULTI_SELECT",
         order: 2,
-        question: "You should interrupt someone when they are expressing frustration.",
-        callToAction: "Select True or False",
-        hint: "Think about active listening.",
-        explanation: "Interrupting reduces trust and prevents emotional validation.",
-        questionImage: null,
+        promptText: "Which actions help resolve conflict?",
+        callToAction: "Select all that apply",
+        hint: "Think calm responses.",
+        explanation: "Listening, tone, and validation reduce conflict.",
+        imageSrc: null,
+        videoSrc: null,
       },
+
+      // 3. TRUE FALSE
       {
         id: 3,
         lessonId: 1,
-        type: "MULTIPLE_CHOICE",
+        type: "TRUE_FALSE",
         order: 3,
-        question: "A teammate made a mistake. What is best?",
-        callToAction: "Pick the best response",
-        hint: "Focus on solution, not blame.",
-        explanation: "Focusing on solutions builds accountability without conflict.",
-        questionImage: null,
+        promptText: "Interrupting someone improves communication.",
+        callToAction: "True or False?",
+        hint: "Think about active listening.",
+        explanation: "Interrupting reduces understanding.",
+        imageSrc: null,
+        videoSrc: null,
       },
+
+      // 4. VIDEO
       {
         id: 4,
         lessonId: 1,
-        type: "TRUE_FALSE",
+        type: "VIDEO",
         order: 4,
-        question: "Ignoring a teammate’s mistake is the best way to maintain harmony.",
-        callToAction: "Select True or False",
-        hint: "Think about long-term team performance.",
-        explanation: "Ignoring mistakes reduces growth and creates repeated issues.",
-        questionImage: null,
-      },
-      {
-        id: 5,
-        lessonId: 2,
-        type: "MULTIPLE_CHOICE",
-        order: 1,
-        question: "A coworker disagrees with you. What is best?",
-        callToAction: "Pick the best response",
-        hint: "Focus on understanding before responding.",
-        explanation: "Understanding before responding reduces conflict.",
-        questionImage: null,
-      },
-
-      // NEW MULTI_SELECT CHALLENGES
-      {
-        id: 6,
-        lessonId: 1,
-        type: "MULTIPLE_CHOICE",
-        order: 5,
-        question: "A teammate misses a deadline. What is the best response?",
-        callToAction: "Pick the best response",
-        hint: "Focus on clarity and support, not blame.",
-        explanation: "Addressing the cause while offering support improves future performance.",
-        questionImage: null,
-      },
-      {
-        id: 7,
-        lessonId: 1,
-        type: "TRUE_FALSE",
-        order: 6,
-        question: "Giving feedback should focus only on what went wrong.",
-        callToAction: "Select True or False",
-        hint: "Think about balanced feedback.",
-        explanation: "Effective feedback includes both strengths and improvements.",
-        questionImage: null,
-      },
-      {
-        id: 8,
-        lessonId: 1,
-        type: "MULTI_SELECT",
-        order: 7,
-        question: "Which actions help de-escalate conflict?",
-        callToAction: "Select all that apply",
-        hint: "Think calm, not reactive responses.",
-        explanation: "De-escalation comes from calm tone, listening, and validating feelings.",
-        questionImage: null,
-      },
-      {
-        id: 9,
-        lessonId: 1,
-        type: "MULTI_SELECT",
-        order: 8,
-        question: "Which behaviors damage team trust?",
-        callToAction: "Select all that apply",
-        hint: "Think long-term impact on relationships.",
-        explanation: "Blame, ignoring issues, and public shaming reduce trust.",
-        questionImage: null,
+        promptText: "Watch the scenario carefully.",
+        callToAction: "What is the best response?",
+        hint: "Focus on tone and timing.",
+        explanation: "Correct response depends on de-escalation.",
+        imageSrc: null,
+        videoSrc: "/assets/videos/sample-video.mp4",
       },
     ]);
 
     await db.insert(schema.challengeOptions).values([
+      // MULTIPLE CHOICE (4 options)
       {
         challengeId: 1,
         correct: true,
@@ -193,144 +148,60 @@ const main = async () => {
         text: "Change the subject",
       },
 
+      // MULTI SELECT
       {
         challengeId: 2,
-        correct: false,
-        text: "True",
-      },
-      {
-        challengeId: 2,
-        correct: true,
-        text: "False",
-      },
-
-      {
-        challengeId: 3,
-        correct: true,
-        text: "Help fix the issue calmly",
-      },
-      {
-        challengeId: 3,
-        correct: false,
-        text: "Blame them",
-      },
-      {
-        challengeId: 3,
-        correct: false,
-        text: "Publicly call them out",
-      },
-      {
-        challengeId: 3,
-        correct: false,
-        text: "Ignore the mistake",
-      },
-
-      {
-        challengeId: 4,
-        correct: false,
-        text: "True",
-      },
-      {
-        challengeId: 4,
-        correct: true,
-        text: "False",
-      },
-
-      {
-        challengeId: 5,
-        correct: true,
-        text: "Listen to their perspective and respond calmly",
-      },
-      {
-        challengeId: 5,
-        correct: false,
-        text: "Immediately defend your position",
-      },
-      {
-        challengeId: 5,
-        correct: false,
-        text: "Ignore their opinion",
-      },
-      {
-        challengeId: 5,
-        correct: false,
-        text: "End the conversation",
-      },
-
-      {
-        challengeId: 6,
-        correct: true,
-        text: "Ask what caused the delay and help plan next steps",
-      },
-      {
-        challengeId: 6,
-        correct: false,
-        text: "Ignore it and move on",
-      },
-      {
-        challengeId: 6,
-        correct: false,
-        text: "Blame them for being unprofessional",
-      },
-      {
-        challengeId: 6,
-        correct: false,
-        text: "Report them immediately without discussion",
-      },
-
-      {
-        challengeId: 7,
-        correct: false,
-        text: "True",
-      },
-      {
-        challengeId: 7,
-        correct: true,
-        text: "False",
-      },
-
-      // MULTI_SELECT 8
-      {
-        challengeId: 8,
         correct: true,
         text: "Listening without interrupting",
       },
       {
-        challengeId: 8,
-        correct: true,
-        text: "Validating emotions",
-      },
-      {
-        challengeId: 8,
+        challengeId: 2,
         correct: true,
         text: "Using calm tone",
       },
       {
-        challengeId: 8,
+        challengeId: 2,
+        correct: true,
+        text: "Validating emotions",
+      },
+      {
+        challengeId: 2,
         correct: false,
         text: "Raising your voice",
       },
 
-      // MULTI_SELECT 9
+      // TRUE FALSE
       {
-        challengeId: 9,
-        correct: true,
-        text: "Blaming teammates publicly",
-      },
-      {
-        challengeId: 9,
-        correct: true,
-        text: "Ignoring repeated issues",
-      },
-      {
-        challengeId: 9,
-        correct: true,
-        text: "Shaming others in meetings",
-      },
-      {
-        challengeId: 9,
+        challengeId: 3,
         correct: false,
-        text: "Giving private constructive feedback",
+        text: "True",
+      },
+      {
+        challengeId: 3,
+        correct: true,
+        text: "False",
+      },
+
+      // VIDEO (4 options required by your system)
+      {
+        challengeId: 4,
+        correct: true,
+        text: "Respond calmly and acknowledge feelings",
+      },
+      {
+        challengeId: 4,
+        correct: false,
+        text: "Interrupt immediately",
+      },
+      {
+        challengeId: 4,
+        correct: false,
+        text: "Ignore it",
+      },
+      {
+        challengeId: 4,
+        correct: false,
+        text: "Escalate conflict",
       },
     ]);
 

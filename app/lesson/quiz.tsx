@@ -14,6 +14,7 @@ import { upsertChallengeProgress } from "@/actions/challenge-progress";
 import { useQuizAudio } from "@/hooks/use-quiz-audio";
 import { useTTS } from "@/hooks/use-tts";
 import { MultiSelect } from "./components/challenges/MultiSelect";
+import { Video } from "./components/challenges/Video";
 
 type Props = {
   initialPercentage: number;
@@ -68,10 +69,6 @@ export const Quiz = ({
 
   const showHintMode = hintState !== "locked";
 
-  const challenge = challenges[activeIndex];
-  const options = challenge?.challengeOptions ?? [];
-  const explanation = challenge?.explanation ?? "";
-
   const { playCorrect, playIncorrect, playCompletion } = useQuizAudio();
   const { speak, stop, isSpeaking } = useTTS();
 
@@ -120,6 +117,11 @@ export const Quiz = ({
   useEffect(() => {
     if (isComplete) playCompletion();
   }, [isComplete, playCompletion]);
+
+  const challenge = challenges[activeIndex];
+
+  const options = challenge?.challengeOptions ?? [];
+  const explanation = challenge?.explanation ?? "";
 
   const { onSelect, onContinue, speakCurrent } = useQuizHandlers({
     challenge,
@@ -225,16 +227,6 @@ export const Quiz = ({
         >
           <div className="w-full max-w-180 mx-auto flex flex-col gap-y-12 px-4 lg:px-0">
             <div className="flex flex-col gap-y-8 text-center">
-              <div className="flex flex-col gap-y-2">
-                <h1 className="text-lg lg:text-3xl font-bold text-neutral-700">
-                  {challenge.question}
-                </h1>
-
-                <p className="text-neutral-500 text-sm lg:text-base">
-                  {challenge.callToAction}
-                </p>
-              </div>
-
               {challenge.type === "MULTIPLE_CHOICE" && (
                 <MultipleChoice
                   challenge={challenge}
@@ -259,9 +251,21 @@ export const Quiz = ({
 
               {challenge.type === "MULTI_SELECT" && (
                 <MultiSelect
+                  challenge={challenge}
                   options={options}
                   selectedOptions={selectedOptions}
                   onToggle={onSelect}
+                  status={status}
+                  disabled={isPending}
+                />
+              )}
+
+              {challenge.type === "VIDEO" && (
+                <Video
+                  challenge={challenge}
+                  options={options}
+                  selectedOption={selectedOption}
+                  onSelect={onSelect}
                   status={status}
                   disabled={isPending}
                 />
