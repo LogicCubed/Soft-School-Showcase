@@ -51,6 +51,7 @@ export const challengesEnum = pgEnum("type", [
     "MULTI_SELECT",
     "TRUE_FALSE",
     "VIDEO",
+    "AUDIO",
 ]);
 
 export const challenges = pgTable("challenges", {

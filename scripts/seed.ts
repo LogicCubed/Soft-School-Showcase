@@ -1,4 +1,5 @@
-import "dotenv/config";
+import dotenv from "dotenv";
+dotenv.config({ path: ".env.local" });
 import db from "../db";
 import * as schema from "../db/schema";
 
@@ -123,6 +124,21 @@ const main = async () => {
         imageSrc: null,
         videoSrc: "/assets/videos/sample-video.mp4",
       },
+
+      // 5. AUDIO
+      {
+        id: 5,
+        lessonId: 1,
+        type: "AUDIO",
+        order: 5,
+        promptText: "Listen carefully to the scenario.",
+        callToAction: "What is the best response?",
+        hint: "Focus on tone and intent.",
+        explanation: "Active listening reduces conflict escalation.",
+        imageSrc: null,
+        videoSrc: null,
+        audioSrc: "/assets/audio/sample-audio.mp3",
+      },
     ]);
 
     await db.insert(schema.challengeOptions).values([
@@ -182,7 +198,7 @@ const main = async () => {
         text: "False",
       },
 
-      // VIDEO (4 options required by your system)
+      // VIDEO
       {
         challengeId: 4,
         correct: true,
@@ -202,6 +218,28 @@ const main = async () => {
         challengeId: 4,
         correct: false,
         text: "Escalate conflict",
+      },
+
+      // AUDIO
+      {
+        challengeId: 5,
+        correct: true,
+        text: "Listen and acknowledge their feelings",
+      },
+      {
+        challengeId: 5,
+        correct: false,
+        text: "Interrupt them immediately",
+      },
+      {
+        challengeId: 5,
+        correct: false,
+        text: "Ignore the situation",
+      },
+      {
+        challengeId: 5,
+        correct: false,
+        text: "Blame them",
       },
     ]);
 

@@ -22,6 +22,13 @@
       "when": 1776761063314,
       "tag": "0002_melodic_firebrand",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1776900873015,
+      "tag": "0003_high_sabra",
+      "breakpoints": true
     }
   ]
 }

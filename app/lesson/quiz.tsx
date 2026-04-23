@@ -15,6 +15,7 @@ import { useQuizAudio } from "@/hooks/use-quiz-audio";
 import { useTTS } from "@/hooks/use-tts";
 import { MultiSelect } from "./components/challenges/MultiSelect";
 import { Video } from "./components/challenges/Video";
+import { Audio } from "./components/challenges/Audio";
 
 type Props = {
   initialPercentage: number;
@@ -262,6 +263,17 @@ export const Quiz = ({
 
               {challenge.type === "VIDEO" && (
                 <Video
+                  challenge={challenge}
+                  options={options}
+                  selectedOption={selectedOption}
+                  onSelect={onSelect}
+                  status={status}
+                  disabled={isPending}
+                />
+              )}
+
+              {challenge.type === "AUDIO" && (
+                <Audio
                   challenge={challenge}
                   options={options}
                   selectedOption={selectedOption}
