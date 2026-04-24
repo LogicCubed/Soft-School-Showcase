@@ -1,23 +1,27 @@
-import { getCourses, getUserProgress, getCourseProgressPercentage } from "@/db/queries";
+import { getCourses, getUserProgress, getCourseProgressPercentage, getCourseProgress, getLessonPercentage } from "@/db/queries";
 import { List } from "./list";
 import Head from "next/head";
+import { ResumeLearning } from "./ResumeLearning";
 
 const CoursesPage = async () => {
-  const [courses, userProgress] = await Promise.all([
+  const [courses, userProgress, courseProgress, lessonPercentage] = await Promise.all([
     getCourses(),
     getUserProgress(),
+    getCourseProgress(),
+    getLessonPercentage(),
   ]);
 
   const coursesWithProgress = await Promise.all(
     courses.map(async (course) => {
       const progress = await getCourseProgressPercentage(course.id);
-
-      return {
-        ...course,
-        progress,
-      };
+      return { ...course, progress };
     })
   );
+
+  const activeCourse = userProgress?.activeCourse;
+
+  const activeCoursePercentage =
+    coursesWithProgress.find((c) => c.id === userProgress?.activeCourseId)?.progress ?? 0;
 
   return (
     <>
@@ -36,6 +40,20 @@ const CoursesPage = async () => {
             Soft Skills Courses
           </h1>
         </header>
+
+        {activeCourse && (
+          <section className="mb-6">
+            <ResumeLearning
+              courseTitle={activeCourse.title}
+              courseImageSrc={activeCourse.imageSrc}
+              activeLessonId={courseProgress?.activeLessonId}
+              activeLessonTitle={courseProgress?.activeLesson?.title}
+              activeUnitTitle={courseProgress?.activeLesson?.unit?.title}
+              lessonPercentage={lessonPercentage}
+              coursePercentage={activeCoursePercentage}
+            />
+          </section>
+        )}
 
         <section>
           <List

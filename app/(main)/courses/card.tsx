@@ -30,14 +30,16 @@ export const Card = ({
     <div
       onClick={() => onClick(id)}
       className={cn(
-        "relative h-full border-2 rounded-xl border-b-6 bg-sky-400 hover:bg-sky-500 border-sky-600 cursor-pointer active:border-b-2 flex flex-col items-center justify-between p-3 pb-6 min-h-54.25 min-w-50",
+        "group relative h-full border-2 rounded-xl border-b-6 bg-sky-400 hover:bg-sky-500 border-sky-600 cursor-pointer active:border-b-2 flex flex-col items-center justify-between p-3 pb-6 min-h-54.25 min-w-50",
         disabled && "pointer-events-none opacity-50"
       )}
     >
       {/* Star button */}
       <button
         onClick={(e) => onStar?.(id, e)}
-        className="absolute top-2 right-2 z-10 p-1 rounded-full hover:bg-sky-300/50 transition-colors"
+        className={cn("absolute top-2 right-2 z-10 p-1 rounded-full hover:bg-sky-300/50 transition-all",
+                      starred ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+        )}
         aria-label={starred ? "Unstar course" : "Star course"}
       >
         <Star
