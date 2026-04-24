@@ -139,6 +139,21 @@ const main = async () => {
         videoSrc: null,
         audioSrc: "/assets/audio/sample-audio.mp3",
       },
+
+      // 6. MATCH
+      {
+        id: 6,
+        lessonId: 1,
+        type: "MATCH",
+        order: 6,
+        promptText: "Match the response to the emotion.",
+        callToAction: "Drag or pair correctly",
+        hint: "Think emotional alignment",
+        explanation: "Matching tone improves empathy",
+        imageSrc: null,
+        videoSrc: null,
+        audioSrc: null,
+      },
     ]);
 
     await db.insert(schema.challengeOptions).values([
@@ -242,6 +257,56 @@ const main = async () => {
         text: "Blame them",
       },
     ]);
+
+    await db.insert(schema.matchItems).values([
+  // MATCH PAIR 1 (I'm fine)
+  {
+    challengeId: 6,
+    groupId: 1,
+    text: "I'm fine",
+    type: "LEFT",
+    matchKey: "fine",
+  },
+  {
+    challengeId: 6,
+    groupId: 1,
+    text: "Hiding frustration",
+    type: "RIGHT",
+    matchKey: "fine",
+  },
+
+  // MATCH PAIR 2 (I understand)
+  {
+    challengeId: 6,
+    groupId: 1,
+    text: "I understand",
+    type: "LEFT",
+    matchKey: "understand",
+  },
+  {
+    challengeId: 6,
+    groupId: 1,
+    text: "Empathy",
+    type: "RIGHT",
+    matchKey: "understand",
+  },
+
+  // MATCH PAIR 3 (Whatever)
+  {
+    challengeId: 6,
+    groupId: 1,
+    text: "Whatever",
+    type: "LEFT",
+    matchKey: "whatever",
+  },
+  {
+    challengeId: 6,
+    groupId: 1,
+    text: "Dismissive tone",
+    type: "RIGHT",
+    matchKey: "whatever",
+  },
+]);
 
     console.log("Seeding finished");
   } catch (error) {

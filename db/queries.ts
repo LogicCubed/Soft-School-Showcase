@@ -194,6 +194,7 @@ export const getLesson = cache(async (id?: number) => {
                 orderBy: (challenges, { asc }) => [asc(challenges.order)],
                 with: {
                     challengeOptions: true,
+                    matchItems: true,
                     challengeProgress: {
                         where: eq(challengeProgress.userId, userId),
                     },
@@ -209,7 +210,22 @@ export const getLesson = cache(async (id?: number) => {
             challenge.challengeProgress?.length > 0 &&
             challenge.challengeProgress.every((p) => p.completed);
 
-        return { ...challenge, completed };
+        let match = undefined;
+
+        if (challenge.type === "MATCH") {
+            const items = challenge.matchItems ?? [];
+
+            match = {
+                left: items.filter((i) => i.type === "LEFT"),
+                right: items.filter((i) => i.type === "RIGHT"),
+            };
+        }
+
+        return {
+            ...challenge,
+            completed,
+            match,
+        };
     });
 
     return { ...data, challenges: normalizedChallenges };

@@ -29,6 +29,20 @@
       "when": 1776900873015,
       "tag": "0003_high_sabra",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1776903908791,
+      "tag": "0004_regular_loki",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1776904258348,
+      "tag": "0005_old_young_avengers",
+      "breakpoints": true
     }
   ]
 }

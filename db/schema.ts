@@ -52,6 +52,12 @@ export const challengesEnum = pgEnum("type", [
     "TRUE_FALSE",
     "VIDEO",
     "AUDIO",
+    "MATCH",
+]);
+
+export const matchItemTypeEnum = pgEnum("match_item_type", [
+  "LEFT",
+  "RIGHT",
 ]);
 
 export const challenges = pgTable("challenges", {
@@ -77,7 +83,10 @@ export const challengesRelations = relations(challenges, ({ one, many }) => ({
         fields: [challenges.lessonId],
         references: [lessons.id],
     }),
+
     challengeOptions: many(challengeOptions),
+    matchItems: many(matchItems),
+    
     challengeProgress: many(challengeProgress),
 }));
 
@@ -93,6 +102,29 @@ export const challengeOptionsRelations = relations(challengeOptions, ({ one }) =
         fields: [challengeOptions.challengeId],
         references: [challenges.id],
     }),
+}));
+
+export const matchItems = pgTable("match_items", {
+  id: serial("id").primaryKey(),
+
+  challengeId: integer("challenge_id")
+    .references(() => challenges.id, { onDelete: "cascade" })
+    .notNull(),
+
+  groupId: integer("group_id").notNull(),
+
+  text: text("text").notNull(),
+
+  type: matchItemTypeEnum("type").notNull(),
+  
+  matchKey: text("match_key").notNull(),
+});
+
+export const matchItemsRelations = relations(matchItems, ({ one }) => ({
+  challenge: one(challenges, {
+    fields: [matchItems.challengeId],
+    references: [challenges.id],
+  }),
 }));
 
 export const challengeProgress = pgTable("challenge_progress", {

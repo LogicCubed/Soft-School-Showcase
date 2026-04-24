@@ -18,6 +18,7 @@ type Params = {
   status: "correct" | "wrong" | "none";
   selectedOption?: number;
   selectedOptions: number[];
+  matchAnswer?: any[];
 
   setStatus: (v: "correct" | "wrong" | "none") => void;
   setSelectedOption: (v?: number) => void;
@@ -52,6 +53,7 @@ export const useQuizHandlers = ({
   status,
   selectedOption,
   selectedOptions,
+  matchAnswer,
 
   setSelectedOptions,
   setSelectedOption,
@@ -95,15 +97,24 @@ export const useQuizHandlers = ({
     if (!challenge) return;
 
     const isMulti = challenge.type === "MULTI_SELECT";
+    const isMatch = challenge.type === "MATCH";
 
     const hasNoAnswer =
-      isMulti
-        ? selectedOptions.length === 0
-        : selectedOption === undefined;
+      isMatch
+        ? !matchAnswer || matchAnswer.length < (challenge.match?.left?.length ?? 0)
+        : isMulti
+          ? selectedOptions.length === 0
+          : selectedOption === undefined;
 
-    if (hasNoAnswer) return;
+    let answer: any;
 
-    const answer = isMulti ? selectedOptions : selectedOption!;
+    if (challenge.type === "MATCH") {
+      answer = matchAnswer ?? [];
+    } else if (challenge.type === "MULTI_SELECT") {
+      answer = selectedOptions;
+    } else {
+      answer = selectedOption;
+    }
 
     const isCorrect = evaluateChallenge(challenge, answer, options);
 

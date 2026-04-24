@@ -16,6 +16,7 @@ import { useTTS } from "@/hooks/use-tts";
 import { MultiSelect } from "./components/challenges/MultiSelect";
 import { Video } from "./components/challenges/Video";
 import { Audio } from "./components/challenges/Audio";
+import { Match } from "./components/challenges/Match";
 
 type Props = {
   initialPercentage: number;
@@ -57,6 +58,8 @@ export const Quiz = ({
 
   const [selectedOption, setSelectedOption] = useState<number>();
   const [selectedOptions, setSelectedOptions] = useState<number[]>([]);
+
+  const [matchAnswer, setMatchAnswer] = useState<number[]>([]);
 
   const [status, setStatus] = useState<"correct" | "wrong" | "none">("none");
 
@@ -119,6 +122,10 @@ export const Quiz = ({
     if (isComplete) playCompletion();
   }, [isComplete, playCompletion]);
 
+  useEffect(() => {
+    setMatchAnswer([]);
+  }, [activeIndex]);
+
   const challenge = challenges[activeIndex];
 
   const options = challenge?.challengeOptions ?? [];
@@ -131,6 +138,7 @@ export const Quiz = ({
     status,
     selectedOption,
     selectedOptions,
+    matchAnswer,
 
     setStatus,
     setSelectedOption,
@@ -176,6 +184,10 @@ export const Quiz = ({
     metrics.totalAttempts === 0
       ? 0
       : metrics.correctAnswers / metrics.totalAttempts;
+
+  const isMatchEmpty =
+    challenge?.type === "MATCH" &&
+    (!matchAnswer || matchAnswer.length === 0);
 
   if (!challenge) {
     return (
@@ -282,6 +294,15 @@ export const Quiz = ({
                   disabled={isPending}
                 />
               )}
+
+              {challenge.type === "MATCH" && (
+                <Match
+                  challenge={challenge}
+                  value={matchAnswer}
+                  onChange={setMatchAnswer}
+                  status={status}
+                />
+              )}
             </div>
           </div>
         </div>
@@ -294,9 +315,12 @@ export const Quiz = ({
           disabled={
             isPending ||
             isTransitioning ||
-            (challenge.type === "MULTI_SELECT"
-              ? selectedOptions.length === 0
-              : !selectedOption)
+            isMatchEmpty ||
+            (challenge.type === "MULTI_SELECT" && selectedOptions.length === 0) ||
+            (challenge.type === "MULTIPLE_CHOICE" && !selectedOption) ||
+            (challenge.type === "TRUE_FALSE" && !selectedOption) ||
+            (challenge.type === "VIDEO" && !selectedOption) ||
+            (challenge.type === "AUDIO" && !selectedOption)
           }
           status={status}
           onCheck={onContinue}
