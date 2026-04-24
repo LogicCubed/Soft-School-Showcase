@@ -47,6 +47,14 @@ export function DiamondButton({
           topFaceClasses
         )}
       >
+
+        {!isLocked && (
+          <div className="absolute inset-0 rounded-xl overflow-hidden">
+            <div className="absolute top-1 left-2 right-2 h-[28%] bg-white/40 rounded-lg blur-[0.75px]" />
+            <div className="absolute top-9 left-2 right-2 h-[12%] bg-white/30 rounded-lg blur-[0.75px]" />
+          </div>
+        )}
+
         <div className="-rotate-45 flex flex-col items-center justify-center">
           {Icon && <Icon className="w-16 h-16" strokeWidth={2.5} />}
         </div>
