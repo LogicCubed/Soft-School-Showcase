@@ -1,5 +1,7 @@
+import dotenv from "dotenv";
+dotenv.config({ path: ".env.local" });
 import db from "@/db/index";
-import { quests } from "@/db/schema";
+import { quests, userQuestProgress } from "@/db/schema";
 
 const questData = [
     {
@@ -37,7 +39,13 @@ const questData = [
 ];
 
 const main = async () => {
+    console.log("Clearing existing quests...");
+    await db.delete(userQuestProgress);
+    await db.delete(quests);
+
+    console.log("Seeding quests...");
     await db.insert(quests).values(questData);
+
     console.log("Quests seeded!");
     process.exit(0);
 };

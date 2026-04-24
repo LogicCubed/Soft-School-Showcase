@@ -50,6 +50,13 @@
       "when": 1777004997571,
       "tag": "0006_flaky_quasimodo",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1777059140745,
+      "tag": "0007_ordinary_major_mapleleaf",
+      "breakpoints": true
     }
   ]
 }
