@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, Crown, Star } from "lucide-react";
+import { Check, Crown, Lock, Star } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 import { cn } from "@/lib/utils";
@@ -43,7 +43,7 @@ export const LessonButton = ({
   const isLast = index === totalCount;
   const isCompleted = !current && !locked;
 
-  const Icon = isCompleted ? Check : isLast ? Crown : Star;
+  const Icon = locked ? Lock : isCompleted ? Check : isLast ? Crown : Star;
 
   const href = `/lesson/${id}`;
 
@@ -76,6 +76,7 @@ export const LessonButton = ({
         variant={locked ? "locked" : "primary"}
         onClick={handleClick}
         Icon={Icon}
+        isCompleted={isCompleted}
         className={cn(isCompleted && "cursor-pointer")}
       />
     </div>

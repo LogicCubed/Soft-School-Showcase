@@ -5,12 +5,14 @@ type DiamondButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   variant: "primary" | "locked";
   Icon?: React.ElementType;
   current?: boolean;
+  isCompleted?: boolean;
 };
 
 export function DiamondButton({
   className,
   variant,
   Icon,
+  isCompleted,
   ...props
 }: DiamondButtonProps) {
   const isLocked = variant === "locked";
@@ -48,9 +50,9 @@ export function DiamondButton({
         )}
       >
 
-        {!isLocked && (
+        {isCompleted && (
           <div className="absolute inset-0 rounded-xl overflow-hidden">
-            <div className="absolute top-1 left-2 right-2 h-[28%] bg-white/40 rounded-lg blur-[0.75px]" />
+            <div className="absolute top-1 left-2 right-2 h-[28%] bg-white/30 rounded-lg blur-[0.75px]" />
             <div className="absolute top-9 left-2 right-2 h-[12%] bg-white/30 rounded-lg blur-[0.75px]" />
           </div>
         )}
