@@ -1,9 +1,9 @@
 import { cache } from "react";
 
 import db from "@/db";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { auth } from "@clerk/nextjs/server";
-import { challengeProgress, challenges, courses, lessons, units, userProgress } from "@/db/schema";
+import { challengeProgress, challenges, courses, lessons, units, userProgress, userQuestProgress } from "@/db/schema";
 
 // Fetches the user's progress record from the database based on their userId.
 // Includes the active course associated with the user.
@@ -310,4 +310,85 @@ export const getTopTenUsers = cache(async () => {
     });
 
     return data;
+});
+
+// Get the start of the current day (UTC midnight)
+export const getCurrentDayStart = (): Date => {
+    const now = new Date();
+    now.setUTCHours(0, 0, 0, 0);
+    return now;
+};
+
+// Fetch all quests with the user's progress for the current week
+export const getQuestsWithProgress = async () => {
+    const { userId } = await auth();
+    if (!userId) return [];
+
+    const dayStart = getCurrentDayStart();
+
+    const allQuests = await db.query.quests.findMany({
+        orderBy: (quests, { asc }) => [asc(quests.order)],
+        with: {
+            userQuestProgress: {
+                where: and(
+                    eq(userQuestProgress.userId, userId),
+                    eq(userQuestProgress.dayStart, dayStart)
+                ),
+            },
+        },
+    });
+
+    return allQuests.map((quest) => ({
+        ...quest,
+        completed: quest.userQuestProgress?.[0]?.completed ?? false,
+        progress: quest.userQuestProgress?.[0]?.progress ?? 0,
+    }));
+};
+
+// Mark a quest as completed for the current day
+export const completeQuest = async (questId: number) => {
+    const { userId } = await auth();
+    if (!userId) throw new Error("Unauthorized");
+
+    const dayStart = getCurrentDayStart();
+
+    await db
+        .insert(userQuestProgress)
+        .values({
+            userId,
+            questId,
+            completed: true,
+            completedAt: new Date(),
+            dayStart,
+        })
+        .onConflictDoNothing();
+};
+
+// Fetches the user's quest completion stats - today's completions and all-time total
+export const getQuestStats = cache(async () => {
+    const { userId } = await auth();
+    if (!userId) return null;
+
+    const dayStart = getCurrentDayStart();
+
+    const [todayRows, allTimeRows] = await Promise.all([
+        db.query.userQuestProgress.findMany({
+            where: and(
+                eq(userQuestProgress.userId, userId),
+                eq(userQuestProgress.dayStart, dayStart),
+                eq(userQuestProgress.completed, true)
+            ),
+        }),
+        db.query.userQuestProgress.findMany({
+            where: and(
+                eq(userQuestProgress.userId, userId),
+                eq(userQuestProgress.completed, true)
+            ),
+        }),
+    ]);
+
+    return {
+        completedToday: todayRows.length,
+        completedAllTime: allTimeRows.length,
+    };
 });

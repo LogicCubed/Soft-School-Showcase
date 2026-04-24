@@ -11,6 +11,7 @@ import { Unit } from "./Unit";
 import { getCourseProgress, getLessonPercentage, getUnits, getUserProgress } from "@/db/queries";
 import { Header } from "./Header";
 import { StatsBar } from "./StatsBar";
+import Quests from "../components/Quests";
 
 const LearnPage = async () => {
   const userProgressData = getUserProgress();
@@ -43,6 +44,7 @@ const LearnPage = async () => {
         <StickyWrapper>
           <StatsBar />
           <Leaderboard />
+          <Quests />
           <StickyFooter />
         </StickyWrapper>
 

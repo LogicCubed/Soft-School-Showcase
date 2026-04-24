@@ -36,6 +36,7 @@ type Params = {
   playIncorrect: () => void;
 
   onAdvance: () => void;
+  onLastChallengeAdvance: () => void;
   onPersistCorrect: (challengeId: number) => void;
   onPersistWrong: (challengeId: number) => void;
   onWrongStreak?: () => void;
@@ -70,6 +71,7 @@ export const useQuizHandlers = ({
   playIncorrect,
 
   onAdvance,
+  onLastChallengeAdvance,
   onPersistCorrect,
   onPersistWrong,
   onWrongStreak,
@@ -78,6 +80,7 @@ export const useQuizHandlers = ({
   setMetrics,
   activeIndex,
 }: Params) => {
+
   const onSelect = (id: number) => {
     if (status !== "none") return;
 
@@ -96,18 +99,32 @@ export const useQuizHandlers = ({
   const onContinue = () => {
     if (!challenge) return;
 
-    const isMulti = challenge.type === "MULTI_SELECT";
-    const isMatch = challenge.type === "MATCH";
+    // ─── Dismiss feedback and advance after wrong answer ──────────────────
+    if (status === "wrong") {
+      setStatus("none");
+      setSelectedOptions([]);
+      setSelectedOption(undefined);
+      setShowExplanation(false);
+      return;
+    }
 
-    const hasNoAnswer =
-      isMatch
-        ? !matchAnswer || matchAnswer.length < (challenge.match?.left?.length ?? 0)
-        : isMulti
-          ? selectedOptions.length === 0
-          : selectedOption === undefined;
+    // ─── Dismiss feedback and advance after correct answer ────────────────
+    if (status === "correct") {
+      setStatus("none");
+      setSelectedOptions([]);
+      setSelectedOption(undefined);
+      setShowExplanation(false);
+      const isLast = activeIndex === challengesLength - 1;
+      if (isLast) {
+        onLastChallengeAdvance();
+      } else {
+        onAdvance();
+      }
+      return;
+    }
 
+    // ─── Evaluate the answer ──────────────────────────────────────────────
     let answer: any;
-
     if (challenge.type === "MATCH") {
       answer = matchAnswer ?? [];
     } else if (challenge.type === "MULTI_SELECT") {
@@ -118,57 +135,31 @@ export const useQuizHandlers = ({
 
     const isCorrect = evaluateChallenge(challenge, answer, options);
 
-    if (status === "wrong") {
-      setStatus("none");
-      setSelectedOptions([]);
-      setSelectedOption(undefined);
-      setShowExplanation(false);
-      return;
-    }
-
-    if (status === "correct") {
-      setStatus("none");
-      setSelectedOptions([]);
-      setSelectedOption(undefined);
-      setShowExplanation(false);
-      onAdvance();
-      return;
-    }
-
     if (isCorrect) {
       playCorrect();
-
       setStatus("correct");
       setStreak((s) => s + 1);
-
       setMetrics((m) => ({
         ...m,
         totalAttempts: m.totalAttempts + 1,
         correctAnswers: m.correctAnswers + 1,
       }));
-
       setPercentage(((activeIndex + 1) / challengesLength) * 100);
-
       onPersistCorrect(challenge.id);
       setShowExplanation(true);
     } else {
       playIncorrect();
-
       const next = attemptsForCurrent + 1;
-    setAttemptsForCurrent(next);
-
+      setAttemptsForCurrent(next);
       setStatus("wrong");
       setStreak(0);
-
       setMetrics((m) => ({
         ...m,
         totalAttempts: m.totalAttempts + 1,
       }));
-
       if (next >= 1) {
         onWrongStreak?.();
       }
-
       onPersistWrong(challenge.id);
       setShowExplanation(true);
     }
@@ -179,7 +170,6 @@ export const useQuizHandlers = ({
       challenge.question +
       ". " +
       options.map((o) => o.text).join(". ");
-
     speak(text);
   };
 

@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm";
-import { boolean, integer, pgEnum, pgTable, serial, text } from "drizzle-orm/pg-core";
+import { boolean, integer, pgEnum, pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
 
 export const courses = pgTable("courses", {
     id: serial("id").primaryKey(),
@@ -132,6 +132,7 @@ export const challengeProgress = pgTable("challenge_progress", {
     userId: text("user_id").notNull(),
     challengeId: integer("challenge_id").references(() => challenges.id, { onDelete: "cascade" }).notNull(),
     completed: boolean("completed").notNull().default(false),
+    completedAt: timestamp("completed_at").defaultNow(),
 });
 
 export const challengeProgressRelations = relations(challengeProgress, ({ one }) => ({
@@ -156,3 +157,36 @@ export const userProgressRelations = relations(userProgress, ({ one }) =>
         references: [courses.id],
     }),
 }))
+
+export const quests = pgTable("quests", {
+    id: serial("id").primaryKey(),
+    title: text("title").notNull(),
+    description: text("description").notNull(),
+    howToEarn: text("how_to_earn").notNull(),
+    pointReward: integer("point_reward").notNull(),
+    imageSrc: text("image_src").notNull(),
+    order: integer("order").notNull(),
+});
+
+export const userQuestProgress = pgTable("user_quest_progress", {
+    id: serial("id").primaryKey(),
+    userId: text("user_id").notNull(),
+    questId: integer("quest_id")
+        .references(() => quests.id, { onDelete: "cascade" })
+        .notNull(),
+    completed: boolean("completed").notNull().default(false),
+    completedAt: timestamp("completed_at"),
+    dayStart: timestamp("day_start").notNull(),
+    progress: integer("progress").notNull().default(0),
+});
+
+export const questsRelations = relations(quests, ({ many }) => ({
+    userQuestProgress: many(userQuestProgress),
+}));
+
+export const userQuestProgressRelations = relations(userQuestProgress, ({ one }) => ({
+    quest: one(quests, {
+        fields: [userQuestProgress.questId],
+        references: [quests.id],
+    }),
+}));

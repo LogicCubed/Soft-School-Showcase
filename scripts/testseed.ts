@@ -7,6 +7,7 @@ const main = async () => {
   try {
     console.log("Seeding database");
 
+    await db.delete(schema.userQuestProgress);
     await db.delete(schema.matchItems);
     await db.delete(schema.challengeOptions);
     await db.delete(schema.challengeProgress);
@@ -14,8 +15,6 @@ const main = async () => {
     await db.delete(schema.lessons);
     await db.delete(schema.units);
     await db.delete(schema.userProgress);
-    await db.delete(schema.userQuestProgress);
-    await db.delete(schema.challengeProgress);
     await db.delete(schema.courses);
 
     await db.insert(schema.courses).values([
@@ -42,36 +41,10 @@ const main = async () => {
     ]);
 
     await db.insert(schema.units).values([
-      // Conflict Resolution
-      {
-        id: 1,
-        courseId: 1,
-        title: "Unit 1",
-        description: "Core skills",
-        order: 1,
-      },
-      {
-        id: 2,
-        courseId: 1,
-        title: "Unit 2",
-        description: "Core skills",
-        order: 2,
-      },
-      // Problem Solving
-      {
-        id: 3,
-        courseId: 2,
-        title: "Unit 1",
-        description: "Foundations of problem solving",
-        order: 1,
-      },
-      {
-        id: 4,
-        courseId: 2,
-        title: "Unit 2",
-        description: "Applied problem solving",
-        order: 2,
-      },
+      { id: 1, courseId: 1, title: "Unit 1", description: "Core skills", order: 1 },
+      { id: 2, courseId: 1, title: "Unit 2", description: "Core skills", order: 2 },
+      { id: 3, courseId: 2, title: "Unit 1", description: "Foundations of problem solving", order: 1 },
+      { id: 4, courseId: 2, title: "Unit 2", description: "Applied problem solving", order: 2 },
     ]);
 
     await db.insert(schema.lessons).values([
@@ -101,7 +74,7 @@ const main = async () => {
     ]);
 
     await db.insert(schema.challenges).values([
-      // ── Conflict Resolution Lesson 1 ──────────────────────────────
+      // ── Conflict Resolution Lesson 1 (2 multiple choice only) ────────────
 
       {
         id: 1,
@@ -118,67 +91,17 @@ const main = async () => {
       {
         id: 2,
         lessonId: 1,
-        type: "MULTI_SELECT",
+        type: "MULTIPLE_CHOICE",
         order: 2,
         promptText: "Which actions help resolve conflict?",
-        callToAction: "Select all that apply",
+        callToAction: "Pick the best response",
         hint: "Think calm responses.",
         explanation: "Listening, tone, and validation reduce conflict.",
         imageSrc: null,
         videoSrc: null,
       },
-      {
-        id: 3,
-        lessonId: 1,
-        type: "TRUE_FALSE",
-        order: 3,
-        promptText: "Interrupting someone improves communication.",
-        callToAction: "True or False?",
-        hint: "Think about active listening.",
-        explanation: "Interrupting reduces understanding.",
-        imageSrc: null,
-        videoSrc: null,
-      },
-      {
-        id: 4,
-        lessonId: 1,
-        type: "VIDEO",
-        order: 4,
-        promptText: "Watch the scenario carefully.",
-        callToAction: "What is the best response?",
-        hint: "Focus on tone and timing.",
-        explanation: "Correct response depends on de-escalation.",
-        imageSrc: null,
-        videoSrc: "/assets/videos/sample-video.mp4",
-      },
-      {
-        id: 5,
-        lessonId: 1,
-        type: "AUDIO",
-        order: 5,
-        promptText: "Listen carefully to the scenario.",
-        callToAction: "What is the best response?",
-        hint: "Focus on tone and intent.",
-        explanation: "Active listening reduces conflict escalation.",
-        imageSrc: null,
-        videoSrc: null,
-        audioSrc: "/assets/audio/sample-audio.mp3",
-      },
-      {
-        id: 6,
-        lessonId: 1,
-        type: "MATCH",
-        order: 6,
-        promptText: "Match the response to the emotion.",
-        callToAction: "Drag or pair correctly",
-        hint: "Think emotional alignment",
-        explanation: "Matching tone improves empathy",
-        imageSrc: null,
-        videoSrc: null,
-        audioSrc: null,
-      },
 
-      // ── Conflict Resolution Lesson 2 ──────────────────────────────
+      // ── Conflict Resolution Lesson 2 ──────────────────────────────────────
 
       {
         id: 7,
@@ -205,7 +128,7 @@ const main = async () => {
         videoSrc: null,
       },
 
-      // ── Problem Solving Lesson 1 ──────────────────────────────────
+      // ── Problem Solving Lesson 1 ──────────────────────────────────────────
 
       {
         id: 9,
@@ -244,7 +167,7 @@ const main = async () => {
         videoSrc: null,
       },
 
-      // ── Problem Solving Lesson 2 ──────────────────────────────────
+      // ── Problem Solving Lesson 2 ──────────────────────────────────────────
 
       {
         id: 12,
@@ -273,88 +196,54 @@ const main = async () => {
     ]);
 
     await db.insert(schema.challengeOptions).values([
-      // ── Conflict Resolution Lesson 1 ─────────────────────────────
+      // ── Conflict Resolution Lesson 1 ──────────────────────────────────────
 
-      // MULTIPLE CHOICE
       { challengeId: 1, correct: true,  text: "Listen and ask how they feel" },
       { challengeId: 1, correct: false, text: "Tell them to calm down" },
       { challengeId: 1, correct: false, text: "Ignore them" },
       { challengeId: 1, correct: false, text: "Change the subject" },
 
-      // MULTI SELECT
       { challengeId: 2, correct: true,  text: "Listening without interrupting" },
-      { challengeId: 2, correct: true,  text: "Using calm tone" },
-      { challengeId: 2, correct: true,  text: "Validating emotions" },
       { challengeId: 2, correct: false, text: "Raising your voice" },
+      { challengeId: 2, correct: false, text: "Ignoring the other person" },
+      { challengeId: 2, correct: false, text: "Walking away immediately" },
 
-      // TRUE FALSE
-      { challengeId: 3, correct: false, text: "True" },
-      { challengeId: 3, correct: true,  text: "False" },
+      // ── Conflict Resolution Lesson 2 ──────────────────────────────────────
 
-      // VIDEO
-      { challengeId: 4, correct: true,  text: "Respond calmly and acknowledge feelings" },
-      { challengeId: 4, correct: false, text: "Interrupt immediately" },
-      { challengeId: 4, correct: false, text: "Ignore it" },
-      { challengeId: 4, correct: false, text: "Escalate conflict" },
-
-      // AUDIO
-      { challengeId: 5, correct: true,  text: "Listen and acknowledge their feelings" },
-      { challengeId: 5, correct: false, text: "Interrupt them immediately" },
-      { challengeId: 5, correct: false, text: "Ignore the situation" },
-      { challengeId: 5, correct: false, text: "Blame them" },
-
-      // ── Conflict Resolution Lesson 2 ─────────────────────────────
-
-      // MULTIPLE CHOICE
       { challengeId: 7, correct: true,  text: "Let each person explain their view" },
       { challengeId: 7, correct: false, text: "Have the loudest person decide" },
       { challengeId: 7, correct: false, text: "Ignore the disagreement" },
       { challengeId: 7, correct: false, text: "Ask the teacher to pick" },
 
-      // TRUE FALSE
       { challengeId: 8, correct: false, text: "True" },
       { challengeId: 8, correct: true,  text: "False" },
 
-      // ── Problem Solving Lesson 1 ──────────────────────────────────
+      // ── Problem Solving Lesson 1 ──────────────────────────────────────────
 
-      // MULTIPLE CHOICE
-      { challengeId: 9, correct: true,  text: "Figure out what exactly isn't working" },
-      { challengeId: 9, correct: false, text: "Start over from scratch immediately" },
-      { challengeId: 9, correct: false, text: "Give up and try something else" },
-      { challengeId: 9, correct: false, text: "Ask someone else to fix it" },
+      { challengeId: 9,  correct: true,  text: "Figure out what exactly isn't working" },
+      { challengeId: 9,  correct: false, text: "Start over from scratch immediately" },
+      { challengeId: 9,  correct: false, text: "Give up and try something else" },
+      { challengeId: 9,  correct: false, text: "Ask someone else to fix it" },
 
-      // MULTI SELECT
       { challengeId: 10, correct: true,  text: "Breaking the problem into smaller parts" },
       { challengeId: 10, correct: true,  text: "Staying calm under pressure" },
       { challengeId: 10, correct: true,  text: "Asking clarifying questions" },
       { challengeId: 10, correct: false, text: "Acting on the first idea immediately" },
 
-      // TRUE FALSE
       { challengeId: 11, correct: false, text: "True" },
       { challengeId: 11, correct: true,  text: "False" },
 
-      // ── Problem Solving Lesson 2 ──────────────────────────────────
+      // ── Problem Solving Lesson 2 ──────────────────────────────────────────
 
-      // MULTIPLE CHOICE
       { challengeId: 12, correct: true,  text: "Reflect on why they failed and try a new approach" },
       { challengeId: 12, correct: false, text: "Keep trying the same solution" },
       { challengeId: 12, correct: false, text: "Give up entirely" },
       { challengeId: 12, correct: false, text: "Blame others for the failure" },
 
-      // MULTI SELECT
       { challengeId: 13, correct: true,  text: "Staying calm" },
       { challengeId: 13, correct: true,  text: "Prioritizing the most important issue" },
       { challengeId: 13, correct: true,  text: "Asking for help when stuck" },
       { challengeId: 13, correct: false, text: "Panicking and rushing decisions" },
-    ]);
-
-    await db.insert(schema.matchItems).values([
-      { challengeId: 6, groupId: 1, text: "I'm fine",     type: "LEFT",  matchKey: "fine" },
-      { challengeId: 6, groupId: 1, text: "Hiding frustration", type: "RIGHT", matchKey: "fine" },
-      { challengeId: 6, groupId: 1, text: "I understand", type: "LEFT",  matchKey: "understand" },
-      { challengeId: 6, groupId: 1, text: "Empathy",      type: "RIGHT", matchKey: "understand" },
-      { challengeId: 6, groupId: 1, text: "Whatever",     type: "LEFT",  matchKey: "whatever" },
-      { challengeId: 6, groupId: 1, text: "Dismissive tone", type: "RIGHT", matchKey: "whatever" },
     ]);
 
     console.log("Seeding finished");

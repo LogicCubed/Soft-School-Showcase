@@ -119,3 +119,14 @@ body {
 .streak-particle {
   animation: streakParticle 700ms ease-out forwards;
 }
+
+@keyframes bounce-in {
+    0% { opacity: 0; transform: scale(0.5) translateY(20px); }
+    60% { transform: scale(1.1) translateY(-5px); }
+    100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.animate-bounce-in {
+    animation: bounce-in 0.5s ease forwards;
+    opacity: 0;
+}
