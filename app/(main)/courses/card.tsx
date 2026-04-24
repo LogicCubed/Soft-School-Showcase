@@ -2,6 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import Image from "next/image";
+import { Star } from "lucide-react";
 
 type Props = {
   title: string;
@@ -11,6 +12,8 @@ type Props = {
   disabled?: boolean;
   active?: boolean;
   progress?: number;
+  starred?: boolean;
+  onStar?: (id: number, e: React.MouseEvent) => void;
 };
 
 export const Card = ({
@@ -20,6 +23,8 @@ export const Card = ({
   disabled,
   onClick,
   progress = 0,
+  starred = false,
+  onStar,
 }: Props) => {
   return (
     <div
@@ -29,6 +34,23 @@ export const Card = ({
         disabled && "pointer-events-none opacity-50"
       )}
     >
+      {/* Star button */}
+      <button
+        onClick={(e) => onStar?.(id, e)}
+        className="absolute top-2 right-2 z-10 p-1 rounded-full hover:bg-sky-300/50 transition-colors"
+        aria-label={starred ? "Unstar course" : "Star course"}
+      >
+        <Star
+          strokeWidth={3}
+          className={cn(
+            "w-5 h-5 transition-colors cursor-pointer",
+            starred
+              ? "fill-yellow-300 stroke-yellow-300"
+              : "fill-transparent stroke-white"
+          )}
+        />
+      </button>
+
       {/* Image */}
       <Image
         src={imageSrc}
@@ -52,7 +74,6 @@ export const Card = ({
               style={{ width: `${Math.min(progress, 100)}%` }}
             />
           </div>
-
           <span className="text-white text-sm font-bold whitespace-nowrap">
             {Math.round(progress)}%
           </span>
